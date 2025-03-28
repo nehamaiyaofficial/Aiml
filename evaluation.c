@@ -12,3 +12,7 @@ int main() {
 	case 2:
             printf("Btech AIML\n");
             break;
+	case 3:
+            
+            printf("Btech ECE\n");
+            break;

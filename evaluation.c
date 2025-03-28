@@ -13,7 +13,7 @@ int main() {
             printf("Btech AIML Amity University\n");
             break;
 	case 3:
-            printf("Btech ECE\n");
+            printf("Btech ECE Insert\n");
             break;
         case 4:
             printf("Btech Mechanic\n");

@@ -9,3 +9,6 @@ int main() {
         case 1:
             printf("Btect CSE\n");
             break;
+	case 2:
+            printf("Btech AIML\n");
+            break;

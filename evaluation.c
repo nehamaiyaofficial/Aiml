@@ -7,7 +7,7 @@ int main() {
     scanf("%d", &branch);
     switch(branch) {
         case 1:
-            printf("Btect CSE\n");
+            printf("Btect CSE College Amity University\n");
             break;
 	case 2:
             printf("Btech AIML\n");

@@ -16,7 +16,7 @@ int main() {
             printf("Btech ECE Insert\n");
             break;
         case 4:
-            printf("Btech Mechanic\n");
+            printf("Btech Mechanic Amity University\n");
             break;
        default:
             printf("Invalid input! Please enter a number between 1 and 4.\n");

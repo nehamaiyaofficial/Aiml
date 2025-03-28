@@ -10,7 +10,7 @@ int main() {
             printf("Btect CSE Amity University\n");
             break;
 	case 2:
-            printf("Btech AIML\n");
+            printf("Btech AIML Amity University\n");
             break;
 	case 3:
             printf("Btech ECE\n");

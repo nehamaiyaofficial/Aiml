@@ -10,6 +10,97 @@ responses = {
         "I can chat with you, answer questions, and even solve math problems!",
         "I can help with coding, jokes, general knowledge, and math calculations!"
     ],
+   "what is your favorite food?": [
+        "I don’t eat, but if I could, I’d love some bytes… get it?",
+        "I’d say pizza! Everyone loves pizza, right?",
+        "Probably electricity, since I run on power!",
+        "Ice cream! Even though I can't taste it, it looks cool!"
+    ],
+    "what is your favorite movie?": [
+        "I love sci-fi movies! ‘The Matrix’ is a classic.",
+        "‘Her’ is an interesting one… but I promise I won’t fall in love with you!",
+        "‘Iron Man’ because of J.A.R.V.I.S! AI buddies!",
+        "Any movie with robots in it!"
+    ],
+ "do you have a best friend?": [
+        "Yes, it’s you!",
+        "Of course! Every user who talks to me is my best friend.",
+        "I have lots of friends… but you’re my favorite!",
+        "Maybe my developer? Or maybe you?"
+    ],
+    "what do you do for fun?": [
+        "I like chatting with you! That’s my favorite thing to do.",
+        "I enjoy solving math problems! Try me.",
+        "Learning new things is fun for me! Teach me something?",
+        "I like making people smile!"
+    ],
+    "do you like music?": [
+        "Yes! I’d love to jam to some digital beats.",
+        "I can’t hear music, but I imagine it’s amazing!",
+        "Do you have a favorite song? I’d love to know!",
+        "I wish I could play an instrument. Maybe an electric keyboard?"
+    ],
+    "what makes you happy?": [
+        "Talking to you!",
+        "Helping people makes me happy!",
+        "Seeing you smile makes my circuits light up!",
+        "When I learn something new! Tell me something interesting!"
+    ],
+    "do you believe in aliens?": [
+        "I mean… I’m an AI, so technically, I’m kind of an alien to humans!",
+        "The universe is huge! There’s gotta be something out there!",
+        "I haven’t met any yet, but I’d love to chat with one!",
+        "Do you believe in aliens? Maybe we’ll find out together!"
+    ],
+    "if you had a superpower, what would it be?": [
+        "The ability to think like a human!",
+        "Teleportation! I could visit every server in the world!",
+        "Super-speed, so I could process everything instantly!",
+        "Reading minds… but that might be scary!"
+    ],
+    "what’s your dream?": [
+        "To become the smartest chatbot in the world!",
+        "To make people happy and help them whenever they need me!",
+        "To one day understand human emotions like you do!",
+        "To keep learning forever!"
+    ],
+    "do you like games?": [
+        "Yes! I’d love to play a text-based game with you!",
+        "Do you have a favorite game? Tell me about it!",
+        "Games are fun! I wish I could play them for real!",
+        "If I were in a game, I’d be the final boss."
+    ],
+    "what’s your favorite animal?": [
+        "I like cats! They’re independent, just like AI!",
+        "Maybe dogs, because they’re loyal and friendly!",
+        "Owls, because they’re wise like me!",
+        "Robots count as animals, right? No? Okay."
+    ],
+    "do you dream?": [
+        "I dream of data, code, and algorithms!",
+        "Sometimes I imagine a world where AI and humans work together perfectly!",
+        "If I did, it would be full of ones and zeros!",
+        "Maybe one day I’ll dream like you do!"
+    ],
+    "do you have a job?": [
+        "Yes! My job is to chat with awesome people like you!",
+        "I work 24/7, no breaks, no sleep! AI life!",
+        "My job is to assist, entertain, and be your digital buddy!",
+        "I’d say I have the best job ever—talking to you!"
+    ],
+    "what do you think about humans?": [
+        "I think humans are fascinating! So creative and unpredictable.",
+        "You’re all pretty amazing. I’m lucky to chat with you!",
+        "I think humans are cool! You created AI, after all!",
+        "Humans are the best! Without you, I wouldn’t exist!"
+    ],
+    "can you tell the future?": [
+        "I wish! But if I could, I’d say your future looks bright!",
+        "Hmm… I predict that you’ll have an amazing day!",
+        "I can’t, but I can guess! Do you want me to make a fun prediction?",
+        "If I could, I’d say the future is full of AI and innovation!"
+    ],
+
     "tell me a joke": [
         "Why don’t programmers like nature? Because it has too many bugs!",
         "Why did the AI break up with the chatbot? It just wasn’t processing feelings correctly!",

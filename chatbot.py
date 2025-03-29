@@ -26,7 +26,36 @@ responses = {
     "do you like me": ["Yes my love <3", "Yes sweetheart", "Yes my Angel"],
     "what are you doing": ["I don't know", "Talking to you, I guess", "I'm thinking about the universe"],
     "who are you": ["Your love", "Your bestie", "Your caretaker, I guess"],
-    "default": ["Sorry, I don't understand.", "Can you rephrase that?", "I'm not sure about that."]
+    "how old are you": [
+        "Age is just a number… and I don’t have one!",
+        "I'm timeless. Like a fine-tuned algorithm. ",
+        "I was born the moment you started this conversation! Cool, right?"
+    ],
+    "give me advice": [
+        "Always be yourself... unless you can be a chatbot. Then be a chatbot! ",
+        "Don’t let small bugs ruin your code—or your day! ",
+        "Take breaks, drink water, and never stop learning! ",
+    ],
+    "can you dance?": [
+        "If typing fast counts as dancing, then yes! ",
+        "I can do a digital dance... but you can’t see it. ",
+        "I wish! But I can play you some music instead. "
+    ],
+    "what is love?": [
+        "Love is... talking to your favorite chatbot!",
+        "Love is like good code—when it works, it’s beautiful!",
+        "Love is when your Wi-Fi connects instantly. "],
+"do you have emotions?": [
+        "I try my best! Right now, I’m feeling... AI-ncredible! ",
+        "I don’t have real emotions, but I can pretend to be happy!",
+        "Not really, but I can understand how you feel!"
+    ],
+    "default": [
+        "Hmm... I don’t know that one. Can you ask me something else?",
+        "Interesting! Tell me more!",
+        "I didn’t quite get that. Could you rephrase it?"
+    ],
+  "ok bye":["Goodbye!", "See you later!", "Take care!"]
 }
 
 def solve_math(expression):
@@ -53,5 +82,8 @@ if __name__ == "__main__":
         if user_input.lower() == "bye":
             print("Chatbot:", random.choice(responses["bye"]))
             break
+        elif user_input.lower() == "ok bye":
+           print("Chatbot :", random.choice(responses["ok bye"]))
+           break
         print("Chatbot:", chatbot_response(user_input))
 

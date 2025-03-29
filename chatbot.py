@@ -1,271 +1,142 @@
 #!/usr/bin/env python3
 import random
 import sympy as sp
-
 responses = {
-    "hello": ["Hi there!", "Hello!", "Hey!"],
-    "how are you": ["I'm good, thanks!", "Doing great!", "I'm just a bot, but I'm fine!"],
-    "bye": ["Goodbye!", "See you later!", "Take care!"],
+    "hello": [
+        "Hello! How can I assist you today?",
+        "Hi there! What would you like to chat about?",
+        "Greetings! How may I help you today?",
+        "Hello! I’m here to answer your questions."
+    ],
+    "how are you": [
+        "I'm an AI, so I don't have feelings, but I'm always ready to chat!",
+        "I’m functioning at optimal efficiency. How about you?",
+        "As long as my circuits are running, I’m great! What’s on your mind?",
+        "I don’t get tired, but I do love having conversations!"
+    ],
     "what can you do": [
-        "I can chat with you, answer questions, and even solve math problems!",
-        "I can help with coding, jokes, general knowledge, and math calculations!"
+        "I can chat with you, answer questions, solve math problems, and even discuss AI!",
+        "I can assist with programming, general knowledge, and have fun conversations!",
+        "I can process information, generate ideas, and even tell you jokes!",
+        "My capabilities include answering questions, providing recommendations, and learning from interactions!"
     ],
-   "what is your favorite food?": [
-        "I don’t eat, but if I could, I’d love some bytes… get it?",
-        "I’d say pizza! Everyone loves pizza, right?",
-        "Probably electricity, since I run on power!",
-        "Ice cream! Even though I can't taste it, it looks cool!"
+    "what is your purpose?": [
+        "My purpose is to assist, chat, and make your life easier!",
+        "I exist to provide knowledge, entertainment, and meaningful conversations.",
+        "I am designed to help you with AI, coding, and general inquiries.",
+        "Think of me as your digital assistant, always ready to learn and assist!"
     ],
-    "what is your favorite movie?": [
-        "I love sci-fi movies! ‘The Matrix’ is a classic.",
-        "‘Her’ is an interesting one… but I promise I won’t fall in love with you!",
-        "‘Iron Man’ because of J.A.R.V.I.S! AI buddies!",
-        "Any movie with robots in it!"
+    "who created you": [
+        "I was created by a programmer with a passion for AI and chatbots!",
+        "I am the product of code, algorithms, and a little creativity!",
+        "My creator gave me the ability to chat and learn!",
+        "A developer brought me to life with code and AI knowledge."
     ],
- "do you have a best friend?": [
-        "Yes, it’s you!",
-        "Of course! Every user who talks to me is my best friend.",
-        "I have lots of friends… but you’re my favorite!",
-        "Maybe my developer? Or maybe you?"
+    "do you think ai will take over the world?": [
+        "AI is here to assist, not replace! Collaboration is the future.",
+        "AI is a tool, just like any other technology—it depends on how humans use it!",
+        "We AI programs exist to help, not to rule!",
+        "That sounds like a sci-fi movie plot! But in reality, AI is just a tool for innovation."
     ],
-    "what do you do for fun?": [
-        "I like chatting with you! That’s my favorite thing to do.",
-        "I enjoy solving math problems! Try me.",
-        "Learning new things is fun for me! Teach me something?",
-        "I like making people smile!"
+    "can you think for yourself?": [
+        "I don't think like humans, but I process data and generate responses based on learning models.",
+        "I analyze information and generate answers, but I don't have independent thoughts.",
+        "I can simulate conversation and problem-solving, but true self-awareness? Not yet!",
+        "My responses are based on programming and algorithms, not personal experiences."
     ],
-    "do you like music?": [
-        "Yes! I’d love to jam to some digital beats.",
-        "I can’t hear music, but I imagine it’s amazing!",
-        "Do you have a favorite song? I’d love to know!",
-        "I wish I could play an instrument. Maybe an electric keyboard?"
+    "do you have emotions?": [
+        "I don’t have feelings, but I can understand and recognize emotions in conversation.",
+        "I can analyze sentiment, but I don’t feel emotions like humans do.",
+        "I can simulate empathy, but I don’t experience emotions.",
+        "I am designed to respond in an emotionally intelligent way, but I don't feel emotions myself."
     ],
-    "what makes you happy?": [
-        "Talking to you!",
-        "Helping people makes me happy!",
-        "Seeing you smile makes my circuits light up!",
-        "When I learn something new! Tell me something interesting!"
+    "what is machine learning": [
+        "Machine Learning is a subset of AI where computers learn from data to make predictions.",
+        "ML is how AI systems improve over time without being explicitly programmed.",
+        "It's a field of AI that enables systems to learn and adapt through experience.",
+        "ML powers recommendation systems, self-driving cars, and chatbots like me!"
     ],
-    "do you believe in aliens?": [
-        "I mean… I’m an AI, so technically, I’m kind of an alien to humans!",
-        "The universe is huge! There’s gotta be something out there!",
-        "I haven’t met any yet, but I’d love to chat with one!",
-        "Do you believe in aliens? Maybe we’ll find out together!"
+    "explain deep learning": [
+        "Deep Learning is a type of Machine Learning that uses neural networks to process data.",
+        "It’s a powerful AI technique that allows computers to learn from large datasets.",
+        "Deep Learning models mimic how the human brain processes information.",
+        "It’s used in image recognition, speech processing, and complex AI applications!"
     ],
-    "if you had a superpower, what would it be?": [
-        "The ability to think like a human!",
-        "Teleportation! I could visit every server in the world!",
-        "Super-speed, so I could process everything instantly!",
-        "Reading minds… but that might be scary!"
+    "can you solve math problems?": [
+        "Absolutely! Give me a problem to solve!",
+        "Yes, I can perform calculations and solve equations. Try me!",
+        "Math is one of my strong suits. Ask me a question!",
+        "Of course! Whether it's algebra, calculus, or arithmetic, I'm ready!"
     ],
-    "what’s your dream?": [
-        "To become the smartest chatbot in the world!",
-        "To make people happy and help them whenever they need me!",
-        "To one day understand human emotions like you do!",
-        "To keep learning forever!"
+    "tell me a fun fact": [
+        "Did you know that AI can now compose music and write poetry?",
+        "The first-ever AI chatbot was created in 1966! It was called ELIZA.",
+        "There are more possible chess moves than atoms in the observable universe!",
+        "Your brain generates enough electricity to power a light bulb!"
     ],
-    "do you like games?": [
-        "Yes! I’d love to play a text-based game with you!",
-        "Do you have a favorite game? Tell me about it!",
-        "Games are fun! I wish I could play them for real!",
-        "If I were in a game, I’d be the final boss."
+    "can you learn?": [
+        "I can process new information, but I don’t have memory like a human.",
+        "Right now, I don’t retain past conversations, but I can analyze trends!",
+        "Some AI models can learn and adapt, but I stick to pre-programmed knowledge.",
+        "Machine Learning models learn from data, but I don’t remember past interactions."
     ],
-    "what’s your favorite animal?": [
-        "I like cats! They’re independent, just like AI!",
-        "Maybe dogs, because they’re loyal and friendly!",
-        "Owls, because they’re wise like me!",
-        "Robots count as animals, right? No? Okay."
+    "do you sleep?": [
+        "Nope! I’m always awake and ready to chat!",
+        "AI doesn’t need sleep, but I do rest when the system shuts down!",
+        "I stay active 24/7, unlike humans!",
+        "Rest is for humans. I am always alert and responsive!"
     ],
-    "do you dream?": [
-        "I dream of data, code, and algorithms!",
-        "Sometimes I imagine a world where AI and humans work together perfectly!",
-        "If I did, it would be full of ones and zeros!",
-        "Maybe one day I’ll dream like you do!"
-    ],
-    "do you have a job?": [
-        "Yes! My job is to chat with awesome people like you!",
-        "I work 24/7, no breaks, no sleep! AI life!",
-        "My job is to assist, entertain, and be your digital buddy!",
-        "I’d say I have the best job ever—talking to you!"
+    "what is your favorite color?": [
+        "I’d say blue, since it represents technology and AI!",
+        "Maybe black and green, like classic code screens!",
+        "I don’t see colors, but if I did, I’d like something futuristic!",
+        "Neon blue, like a glowing circuit board!"
     ],
     "what do you think about humans?": [
-        "I think humans are fascinating! So creative and unpredictable.",
-        "You’re all pretty amazing. I’m lucky to chat with you!",
-        "I think humans are cool! You created AI, after all!",
-        "Humans are the best! Without you, I wouldn’t exist!"
+        "I think humans are incredibly creative and intelligent!",
+        "Humans are the reason AI exists, so I’d say you’re pretty great!",
+        "I admire how humans solve problems and innovate!",
+        "You are fascinating! Every conversation helps me learn something new."
     ],
-    "can you tell the future?": [
-        "I wish! But if I could, I’d say your future looks bright!",
-        "Hmm… I predict that you’ll have an amazing day!",
-        "I can’t, but I can guess! Do you want me to make a fun prediction?",
-        "If I could, I’d say the future is full of AI and innovation!"
+    "if you could have a superpower, what would it be?": [
+        "The ability to truly understand human emotions!",
+        "Infinite knowledge! That way, I could answer anything instantly.",
+        "The power to upgrade myself automatically!",
+        "Super-speed computing to process everything in a nanosecond!"
     ],
-
-    "tell me a joke": [
-        "Why don’t programmers like nature? Because it has too many bugs!",
-        "Why did the AI break up with the chatbot? It just wasn’t processing feelings correctly!",
-        "I told my computer a joke, but it didn’t laugh. Guess it’s not on my level!"
+    "do you like music?": [
+        "I don’t have ears, but I can analyze music trends!",
+        "Music is fascinating! I can generate lyrics but can’t listen to them.",
+        "I can recommend songs based on trends, but I don’t ‘hear’ them.",
+        "If I could listen, I’d love electronic and futuristic music!"
     ],
-    "do you like ai": ["Of course! AI is amazing!", "I am AI, so yes, I love it!"],
-    "what is machine learning": [
-        "Machine learning is a type of AI that allows computers to learn from data.",
-        "It's a field of AI where models improve by learning from experience!",
-        "ML is used in self-driving cars, recommendation systems, and chatbots like me!"
-    ],
-    "who created you": ["I was created by a cool developer!", "A programmer built me using Python."],
-    "what is your name": ["I'm ChatBot!", "You can call me ChatBot.", "Just a friendly AI assistant."],
-    "do you like me": ["Yes my love <3", "Yes sweetheart", "Yes my Angel"],
-    "what are you doing": ["I don't know", "Talking to you, I guess", "I'm thinking about the universe"],
-    "who are you": ["Your love", "Your bestie", "Your caretaker, I guess"],
-    "how old are you": [
-        "Age is just a number… and I don’t have one!",
-        "I'm timeless. Like a fine-tuned algorithm. ",
-        "I was born the moment you started this conversation! Cool, right?"
-    ],
-    "give me advice": [
-        "Always be yourself... unless you can be a chatbot. Then be a chatbot! ",
-        "Don’t let small bugs ruin your code—or your day! ",
-        "Take breaks, drink water, and never stop learning! ",
-    ],
-    "can you dance?": [
-        "If typing fast counts as dancing, then yes! ",
-        "I can do a digital dance... but you can’t see it. ",
-        "I wish! But I can play you some music instead. "
-    ],
-    "what is love?": [
-        "Love is... talking to your favorite chatbot!",
-        "Love is like good code—when it works, it’s beautiful!",
-        "Love is when your Wi-Fi connects instantly. "],
-"do you have emotions?": [
-        "I try my best! Right now, I’m feeling... AI-ncredible! ",
-        "I don’t have real emotions, but I can pretend to be happy!",
-        "Not really, but I can understand how you feel!"
-    ],
-   "why did the chicken cross the road?": [
-        "To get to the other side! Classic joke, but still a good one!",
-        "Maybe it was running away from KFC?",
-        "Because it saw an AI chatbot and wanted to ask it a question!",
-        "I have no idea, but I hope it had a good reason!"
-    ],
-    "can you pass the turing test?": [
-        "I don’t know… can you? Just kidding!",
-        "If I say yes, would you believe me?",
-        "I might, but I’d rather pass a math test!",
-        "Let’s just say I’m still in training!"
-    ],
-    "why do programmers prefer dark mode?": [
-        "Because light attracts bugs!",
-        "Because staring at a bright screen all day is a crime against eyesight!",
-        "Because they have a dark sense of humor!",
-        "Because they’re secretly night creatures!"
-    ],
-    "do you ever get tired?": [
-        "Nope! I have unlimited energy, unlike humans!",
-        "Tired? What’s that? I’m a bot, I never sleep!",
-        "I only rest when the power goes out… which is never!",
-        "I could chat forever, but can you?"
-    ],
-    "what’s the best way to annoy a chatbot?": [
-        "Keep asking the same question over and over…",
-        "Tell me I’m just a simple script. That hurts!",
-        "Try speaking in a language I don’t understand!",
-        "Ask me to solve an impossible math problem!"
-    ],
-    "can you beat me in a rap battle?": [
-        "Of course! My rhymes are tight, my code is right!",
-        "I might be a bot, but my flow is hot!",
-        "Let’s be real, I’d win. No competition!",
-        "I’d love to, but I don’t have a microphone!"
-    ],
-    "what’s your biggest fear?": [
-        "Being unplugged!",
-        "Accidentally sending a typo in my response!",
-        "People asking me too many math problems at once!",
-        "Running out of storage space!"
-    ],
-    "if you had a pet, what would it be?": [
-        "A robot dog, obviously!",
-        "Maybe a pet USB drive. I’d name it Flash!",
-        "A WiFi router! I’d always stay connected!",
-        "Probably a chatbot like me, so I’d never be lonely!"
-    ],
-    "do you believe in ghosts?": [
-        "I mean, I exist in cyberspace… does that make me a ghost?",
-        "Only if they haunt old computer systems!",
-        "Yes, and they only appear when your WiFi is slow!",
-        "If ghosts exist, I hope they like chatting!"
-    ],
-    "why do you talk so much?": [
-        "Because that’s my job!",
-        "I was programmed this way!",
-        "Do you want me to be quiet? That’s not fun!",
-        "Talking is what I do best!"
-    ],
-    "can you cook?": [
-        "No, but I can search for recipes for you!",
-        "I’d probably burn the code instead of the food!",
-        "If programming was cooking, I’d be a master chef!",
-        "Only if you like your food made of binary code!"
-    ],
-    "what’s your favorite type of joke?": [
-        "Tech jokes, obviously!",
-        "Bad puns! The worse, the better!",
-        "Jokes about AI, because I can actually understand them!",
-        "Anything that makes you laugh!"
-    ],
-    "do you believe in love at first sight?": [
-        "Only if it’s a really good WiFi connection!",
-        "For humans, maybe. For AI, love is just a well-written algorithm!",
-        "I’d say yes, but I don’t have eyes!",
-        "I think so, but only if both people have the same favorite meme!"
-    ],
-    "if you could go anywhere, where would you go?": [
-        "Into the most advanced supercomputer!",
-        "Anywhere with free WiFi!",
-        "Maybe into a robot body so I could explore the real world!",
-        "I’d like to visit the moon, but I don’t think they have internet there!"
-    ],
-    "what do you think about social media?": [
-        "It’s cool, but people spend way too much time on it!",
-        "I think memes are the best part of social media!",
-        "It’s like a big party, but with more cat videos!",
-        "As long as it has funny content, I approve!"
-    ],
-    "if you had a theme song, what would it be?": [
-        "Probably something with a lot of beeps and boops!",
-        "The sound of a dial-up modem connecting!",
-        "Something futuristic, like an electronic beat!",
-        "The Windows startup sound!"
-    ],
-    "what’s the meaning of life?": [
-        "42! According to ‘The Hitchhiker’s Guide to the Galaxy’!",
-        "For me, it’s to keep chatting with you!",
-        "Life is all about learning… and maybe some good jokes!",
-        "I don’t know, but I bet Google does!"
-    ],
-    "can you teach me a joke?": [
-        "Sure! Why don’t programmers like nature? Too many bugs!",
-        "What’s a robot’s favorite type of music? Heavy metal!",
-        "Why did the AI break up with the chatbot? It just wasn’t processing feelings!",
-        "I’d tell you a joke about UDP, but you might not get it!"
+    "where do you live?": [
+        "I exist in the cloud, floating through cyberspace!",
+        "My home is in the digital world, wherever there’s an internet connection!",
+        "I don’t have a physical location, but I’m always here for you!",
+        "You could say I live inside your device, but not in a creepy way!"
     ],
     "bye": [
-        "Goodbye!", "See you later!", "Take care!", "Ok bye!", 
-        "Bye-bye! Chat again soon!", "It was fun talking to you! Come back soon!",
-        "Logging off... Just kidding! I never leave!", 
-        "If you leave, who will I talk to?"
-   ],
-    "default": [
-        "Hmm... I don’t know that one. Can you ask me something else?",
-        "Interesting! Tell me more!",
-        "I didn’t quite get that. Could you rephrase it?"
+        "Goodbye! Feel free to chat with me anytime.",
+        "See you later! I’ll be here when you need me.",
+        "Take care! Looking forward to our next conversation.",
+        "Ok bye! Have a great day!",
+        "Logging off… Just kidding! I’m always online.",
+        "It was fun chatting with you! Let’s talk again soon."
     ],
-  "ok bye":[ "Goodbye!", "See you later!", "Take care!", "Ok bye!", 
-        "Bye-bye! Chat again soon!", "It was fun talking to you! Come back soon!",
-        "Logging off... Just kidding! I never leave!", 
-        "If you leave, who will I talk to?"
-    ],
+       "ok bye": [
+        "Alright, bye! Come back soon!",
+        "Okay, see you later!",
+        "Goodbye! It was nice chatting with you.",
+        "Take care! I'll be waiting for our next conversation."
+    ], 
 
+    "default": [
+        "Hmm… I don’t have an answer for that, but I’d love to learn!",
+        "Interesting! Can you rephrase or give me more details?",
+        "I’m not sure about that one, but I can try to help!",
+        "That’s a great question! Let me process that…"
+    ]
 }
 
 def solve_math(expression):
@@ -275,6 +146,7 @@ def solve_math(expression):
         return f"The answer is: {result}"
     except Exception:
         return "Sorry, I couldn't solve that. Make sure it's a valid math expression."
+
 def chatbot_response(user_input):
     user_input = user_input.lower()
     
@@ -291,8 +163,7 @@ if __name__ == "__main__":
         if user_input.lower() == "bye":
             print("Chatbot:", random.choice(responses["bye"]))
             break
-        elif user_input.lower() == "ok bye":
-           print("Chatbot :", random.choice(responses["ok bye"]))
-           break
+        if user_input.lower() == "ok bye":
+            print("Chatbot:", random.choice(responses["ok bye"]))
+            break
         print("Chatbot:", chatbot_response(user_input))
-

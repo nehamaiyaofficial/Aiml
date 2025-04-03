@@ -218,6 +218,72 @@ class AIChatbot:
             return [text.strip()]
         
         return questions
+    
+    def extract_math_expressions(self, text):
+        """Extracts math expressions from text."""
+        # Define regex patterns for math expressions
+        math_patterns = [
+            r'\b\d+\s*[\+\-\*\/\^]\s*\d+\b',  # Simple operations like 4+5
+            r'\b\d+\s*[\+\-\*\/\^]\s*\d+\s*[\+\-\*\/\^]\s*\d+\b',  # Complex operations like 4+5*6
+            r'\b\d+\s*[\+\-\*\/\^]\s*\(\s*\d+\s*[\+\-\*\/\^]\s*\d+\s*\)\b',  # Operations with parentheses
+            r'solve\s+([0-9\+\-\*\/\^\(\)\s]+)',  # When "solve" is used as a keyword
+            r'calculate\s+([0-9\+\-\*\/\^\(\)\s]+)',  # When "calculate" is used as a keyword
+            r'compute\s+([0-9\+\-\*\/\^\(\)\s]+)',  # When "compute" is used as a keyword
+            r'what is\s+([0-9\+\-\*\/\^\(\)\s]+)',  # When "what is" is used as a keyword
+        ]
+        
+        math_expressions = []
+        for pattern in math_patterns:
+            matches = re.finditer(pattern, text, re.IGNORECASE)
+            for match in matches:
+                # If the pattern has a capture group, use it; otherwise use the full match
+                if match.groups():
+                    math_expressions.append(match.group(1).strip())
+                else:
+                    math_expressions.append(match.group(0).strip())
+        
+        return math_expressions
+
+    def parse_mixed_input(self, text):
+        """
+        Parses mixed input that may contain greetings, questions, and math expressions.
+        Returns a dictionary with categorized parts of the input.
+        """
+        result = {
+            'greetings': [],
+            'questions': [],
+            'math_expressions': [],
+            'commands': [],
+            'remainder': text  # Default to the full text
+        }
+        
+        # Extract math expressions
+        math_expressions = self.extract_math_expressions(text)
+        if math_expressions:
+            result['math_expressions'] = math_expressions
+        
+        # Check for common greetings
+        greeting_patterns = [
+            r'\bhello\b', r'\bhi\b', r'\bhey\b', r'\bgreetings\b', 
+            r'\bgood morning\b', r'\bgood afternoon\b', r'\bgood evening\b'
+        ]
+        
+        for pattern in greeting_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                result['greetings'].append(re.search(pattern, text, re.IGNORECASE).group(0))
+        
+        # Extract questions
+        questions = self.split_into_questions(text)
+        if questions and len(questions) > 1:  # Only consider multiple questions as split
+            result['questions'] = questions
+        
+        # Check for commands
+        for pattern in self.commands:
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
+                result['commands'].append((pattern, match.groups()))
+        
+        return result
 
     def is_question(self, text):
         """Improved method to determine if text is likely a question."""
@@ -342,16 +408,20 @@ class AIChatbot:
             expression = expression.replace('minus', '-')
             expression = expression.replace('times', '*')
             expression = expression.replace('divided by', '/')
-            # Extract the math expression from the text
-            math_pattern = r'[-+*/().\d\s^sincotan\w]+'
-            match = re.search(math_pattern, expression)
-            if match:
-                expression = match.group(0)
-
+            
+            # Clean up the expression by keeping only valid math characters
+            cleaned_expression = re.sub(r'[^0-9+\-*/().\s^]', '', expression)
+            
+            # Remove keywords like "solve", "calculate", etc.
+            keywords = ['solve', 'calculate', 'compute', 'what is']
+            for keyword in keywords:
+                cleaned_expression = re.sub(f'{keyword}\s+', '', cleaned_expression, flags=re.IGNORECASE)
+                
             # Clean up the expression
-            expression = expression.replace('^', '**')
+            cleaned_expression = cleaned_expression.replace('^', '**').strip()
+            
             # Solve the math problem
-            result = sp.sympify(expression)
+            result = sp.sympify(cleaned_expression)
             return f"The answer is: {result}"
         except Exception as e:
             return f"Oops! I couldn't solve that. Make sure it's a valid math expression. Error: {str(e)}"
@@ -439,24 +509,42 @@ class AIChatbot:
     def check_for_math(self, user_input):
         """Checks if the input contains a math problem."""
         math_operators = ['+', '-', '*', '/', '^', '(', ')', 'sin', 'cos', 'tan', 'sqrt', 'log']
-        return any(op in user_input for op in math_operators)
+        
+        # Check for operators
+        has_operators = any(op in user_input for op in math_operators)
+        
+        # Check for solve/calculate keywords with numbers
+        has_math_keywords = re.search(r'(solve|calculate|compute|what is)\s+[0-9]', user_input, re.IGNORECASE)
+        
+        return has_operators or bool(has_math_keywords)
     
     def process_input(self, user_input):
-        """Enhanced method to process user input and generate responses to multiple questions."""
+        """Enhanced method to process mixed user input with greetings, questions, and math."""
         # Add to conversation history
         self.conversation_history.append(("user", user_input))
         
         # Clean input
         cleaned_input = user_input.strip()
         
-        # Check for command patterns first
-        for pattern, command_function in self.commands.items():
-            match = re.match(pattern, cleaned_input.lower())
-            if match:
-                groups = match.groups()
-                response = command_function(*groups)
-                self.conversation_history.append(("bot", response))
-                return response
+        # Parse the mixed input
+        parsed_input = self.parse_mixed_input(cleaned_input)
+        
+        # Initialize response parts
+        response_parts = []
+        
+        # First, check for command patterns
+        for pattern, args in parsed_input['commands']:
+            for cmd_pattern, cmd_function in self.commands.items():
+                if pattern == cmd_pattern:
+                    response = cmd_function(*args)
+                    response_parts.append(response)
+                    break
+        
+        # If commands were found, return immediately
+        if response_parts:
+            combined_response = " ".join(response_parts)
+            self.conversation_history.append(("bot", combined_response))
+            return combined_response
         
         # Check learned responses
         for trigger, response in self.learning_dictionary.items():
@@ -464,36 +552,51 @@ class AIChatbot:
                 self.conversation_history.append(("bot", response))
                 return response
         
-        # Check if input is a math problem
-        if self.check_for_math(cleaned_input):
-            response = self.solve_math(cleaned_input)
-            self.conversation_history.append(("bot", response))
-            return response
+        # Process greetings
+        if parsed_input['greetings']:
+            for greeting in parsed_input['greetings']:
+                greeting_lower = greeting.lower()
+                if greeting_lower in self.responses:
+                    response_parts.append(random.choice(self.responses[greeting_lower]))
+                elif "hello" in greeting_lower or "hi" in greeting_lower or "hey" in greeting_lower:
+                    response_parts.append(random.choice(self.responses["hello"]))
         
-        # Try to identify multiple questions in the input
-        questions = self.split_into_questions(cleaned_input)
+        # Process math expressions
+        if parsed_input['math_expressions']:
+            for expr in parsed_input['math_expressions']:
+                math_result = self.solve_math(expr)
+                response_parts.append(math_result)
         
-        # Process multiple questions if found
-        if len(questions) > 1:
-            answers = []
-            for q in questions:
-                q = q.strip()
-                # Skip empty questions
-                if not q:
-                    continue
-                    
-                answer = self.get_answer_for_question(q)
-                answers.append(f"Q: {q}\nA: {answer}")
+        # Process questions
+        if parsed_input['questions']:
+            for q in parsed_input['questions']:
+                if "how are you" in q.lower():
+                    response_parts.append(random.choice(self.responses["how are you"]))
+                else:
+                    answer = self.get_answer_for_question(q)
+                    if answer:
+                        # Format multi-question responses when there are other components
+                        if len(parsed_input['questions']) > 1 or response_parts:
+                            response_parts.append(f"About '{q}': {answer}")
+                        else:
+                            response_parts.append(answer)
+        
+        # If no specific parts were processed, check the entire input
+        if not response_parts:
+            # Try common phrases first
+            for key in self.responses:
+                if key in cleaned_input.lower():
+                    response_parts.append(random.choice(self.responses[key]))
+                    break
             
-            if answers:
-                combined_answer = "\n\n".join(answers)
-                self.conversation_history.append(("bot", combined_answer))
-                return combined_answer
+            # If still nothing, use the default response
+            if not response_parts:
+                response_parts.append(random.choice(self.responses["default"]))
         
-        # Process as a single question/statement
-        response = self.get_answer_for_question(cleaned_input)
-        self.conversation_history.append(("bot", response))
-        return response
+        # Combine all response parts
+        combined_response = " ".join(response_parts)
+        self.conversation_history.append(("bot", combined_response))
+        return combined_response
 
     def get_answer_for_question(self, question):
         """Helper method to get an answer for a single question."""

@@ -180,34 +180,83 @@ class AIChatbot:
             return " ".join(filtered_text)
         except Exception:
             return text.lower()
-    
+
     def split_into_questions(self, text):
-        """Splits a text into individual questions."""
+        """Splits a text into individual questions more reliably."""
         global NLP_AVAILABLE
         if NLP_AVAILABLE:
             try:
                 # Use NLTK's sentence tokenizer to split text into sentences
                 sentences = sent_tokenize(text)
-                # Filter only question sentences
-                questions = [s for s in sentences if self.is_question(s)]
+                # Filter sentences that are likely questions
+                questions = [s.strip() for s in sentences if self.is_question(s)]
                 if not questions:  # If no questions were found, treat the whole text as one question
-                    return [text]
+                    return [text.strip()]
                 return questions
-            except Exception:
-                # Fall back to simple regex if NLTK fails
+            except Exception as e:
+                print(f"Warning: Error in NLP sentence splitting: {e}")
+                # Fall back to regex if NLTK fails
                 return self.split_questions_regex(text)
         else:
             return self.split_questions_regex(text)
-    
+
     def split_questions_regex(self, text):
-        """Splits text into questions using regex patterns."""
-        # Split by question marks
+        """Splits text into questions using improved regex patterns."""
+        # Split by common sentence terminators
         question_parts = re.split(r'(?<=[.!?])\s+', text)
-        # Filter only parts that are likely questions
-        questions = [part.strip() for part in question_parts if self.is_question(part)]
-        if not questions:  # If no questions were found, treat the whole text as one question
-            return [text]
+        # Filter only parts that are likely questions and clean them
+        questions = [part.strip() for part in question_parts if part.strip() and self.is_question(part)]
+        
+        # Handle the case where no questions were identified but the text might contain question marks
+        if not questions and '?' in text:
+            # Try to split by question marks
+            question_parts = re.split(r'\?', text)
+            questions = [f"{part.strip()}?" for part in question_parts if part.strip()]
+        
+        # If still no questions, treat the whole text as one query
+        if not questions:
+            return [text.strip()]
+        
         return questions
+
+    def is_question(self, text):
+        """Improved method to determine if text is likely a question."""
+        if not text or not isinstance(text, str):
+            return False
+        
+        # Clean the text
+        text = text.strip()
+        if not text:
+            return False
+        
+        # Check for question mark - strongest indicator
+        if text.endswith('?'):
+            return True
+        
+        # Check for question starters
+        question_starters = [
+            'what', 'who', 'where', 'when', 'why', 'how', 
+            'can', 'could', 'would', 'should', 'will', 'shall',
+            'is', 'are', 'was', 'were', 'am', 'do', 'does', 'did',
+            'have', 'has', 'had', 'may', 'might', 'must'
+        ]
+        
+        # Split and get first word, handling punctuation
+        words = re.findall(r'\b\w+\b', text.lower())
+        if words and words[0] in question_starters:
+            return True
+        
+        # Check for inverted subject-verb pattern (common in questions)
+        inverted_patterns = [
+            r'^(is|are|was|were|do|does|did|have|has|had|can|could|would|should|will) [a-z]+',
+            r'^(have|has|had) [a-z]+ been'
+        ]
+        
+        for pattern in inverted_patterns:
+            if re.search(pattern, text.lower()):
+                return True
+        
+        return False
     
     def answer_question(self, question):
         """Searches the knowledge base for an answer to the question."""
@@ -392,21 +441,15 @@ class AIChatbot:
         math_operators = ['+', '-', '*', '/', '^', '(', ')', 'sin', 'cos', 'tan', 'sqrt', 'log']
         return any(op in user_input for op in math_operators)
     
-    def is_question(self, text):
-        """Determines if the input is likely a question."""
-        if not text or not text.split():
-            return False
-        question_starters = ['what', 'who', 'where', 'when', 'why', 'how', 'can', 'could', 'would', 'should', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'have', 'has', 'had']
-        first_word = text.split()[0].lower() if text.split() else ""
-        return text.endswith('?') or first_word in question_starters
-    
     def process_input(self, user_input):
-        """Main method to process user input and generate a response."""
+        """Enhanced method to process user input and generate responses to multiple questions."""
         # Add to conversation history
         self.conversation_history.append(("user", user_input))
-        # Clean input and convert to lowercase
+        
+        # Clean input
         cleaned_input = user_input.strip()
-        # Check for command patterns
+        
+        # Check for command patterns first
         for pattern, command_function in self.commands.items():
             match = re.match(pattern, cleaned_input.lower())
             if match:
@@ -414,63 +457,63 @@ class AIChatbot:
                 response = command_function(*groups)
                 self.conversation_history.append(("bot", response))
                 return response
+        
         # Check learned responses
         for trigger, response in self.learning_dictionary.items():
             if trigger.lower() in cleaned_input.lower():
                 self.conversation_history.append(("bot", response))
                 return response
+        
         # Check if input is a math problem
         if self.check_for_math(cleaned_input):
             response = self.solve_math(cleaned_input)
             self.conversation_history.append(("bot", response))
             return response
+        
         # Try to identify multiple questions in the input
         questions = self.split_into_questions(cleaned_input)
-        # If multiple questions were found, answer each one
+        
+        # Process multiple questions if found
         if len(questions) > 1:
             answers = []
             for q in questions:
-                if self.is_question(q):
-                    answer = self.answer_question(q)
-                    if answer:
-                        answers.append(f"Q: {q.strip()}\nA: {answer}")
-                    else:
-                        # Try to handle this question with other methods
-                        lowercase_q = q.lower().strip()
-                        # Check if it matches a predefined response
-                        for key in self.responses:
-                            if key in lowercase_q:
-                                answers.append(f"Q: {q.strip()}\nA: {random.choice(self.responses[key])}")
-                                break
-                        else:
-                            # If no match found, use default response
-                            answers.append(f"Q: {q.strip()}\nA: {random.choice(self.responses['default'])}")
+                q = q.strip()
+                # Skip empty questions
+                if not q:
+                    continue
+                    
+                answer = self.get_answer_for_question(q)
+                answers.append(f"Q: {q}\nA: {answer}")
+            
             if answers:
                 combined_answer = "\n\n".join(answers)
                 self.conversation_history.append(("bot", combined_answer))
                 return combined_answer
-        # Single question or statement processing
-        if self.is_question(cleaned_input):
-            # Try to find an answer in the knowledge base
-            answer = self.answer_question(cleaned_input)
-            if answer:
-                self.conversation_history.append(("bot", answer))
-                return answer
-        # Get response from predefined list if exact match exists
-        if cleaned_input.lower() in self.responses:
-            response = random.choice(self.responses[cleaned_input.lower()])
-            self.conversation_history.append(("bot", response))
-            return response
-        # Handle partial matches
-        for key in self.responses:
-            if key in cleaned_input.lower():
-                response = random.choice(self.responses[key])
-                self.conversation_history.append(("bot", response))
-                return response
-        # If no match found, use default response
-        response = random.choice(self.responses["default"])
+        
+        # Process as a single question/statement
+        response = self.get_answer_for_question(cleaned_input)
         self.conversation_history.append(("bot", response))
         return response
+
+    def get_answer_for_question(self, question):
+        """Helper method to get an answer for a single question."""
+        # Try to find an answer in the knowledge base
+        if self.is_question(question):
+            answer = self.answer_question(question)
+            if answer:
+                return answer
+        
+        # Get response from predefined list if exact match exists
+        if question.lower() in self.responses:
+            return random.choice(self.responses[question.lower()])
+        
+        # Handle partial matches
+        for key in self.responses:
+            if key in question.lower():
+                return random.choice(self.responses[key])
+        
+        # If no match found, use default response
+        return random.choice(self.responses["default"])
     
     def add_to_knowledge_base(self, user_input):
         """Allows the user to add new information to the knowledge base."""

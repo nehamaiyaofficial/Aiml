@@ -31,29 +31,29 @@ class InstagramCaptionGenerator:
         templates = {
             "instagram": {
                 "nature": [
-                    "Lost in the beauty of nature 🌿 {description} #naturelovers #outdooradventures",
-                    "Finding peace in the great outdoors ✨ {description} #naturephotography #wilderness",
-                    "Mother Nature showing off again 🌄 {description} #naturelover #outdoorlife"
+                    "Lost in the beauty of nature ≡ƒî┐ {description} #naturelovers #outdooradventures",
+                    "Finding peace in the great outdoors Γ£¿ {description} #naturephotography #wilderness",
+                    "Mother Nature showing off again ≡ƒîä {description} #naturelover #outdoorlife"
                 ],
                 "urban": [
-                    "City vibes 🏙️ {description} #citylife #urbanphotography",
-                    "Concrete jungle where dreams are made ✨ {description} #cityscape #urban",
-                    "Streets have their own stories 🌃 {description} #streetphotography #citylights"
+                    "City vibes ≡ƒÅÖ∩╕Å {description} #citylife #urbanphotography",
+                    "Concrete jungle where dreams are made Γ£¿ {description} #cityscape #urban",
+                    "Streets have their own stories ≡ƒîâ {description} #streetphotography #citylights"
                 ],
                 "portrait": [
-                    "Captured moments ✨ {description} #portrait #photooftheday",
-                    "Being my authentic self 💫 {description} #selfcare #goodvibes",
-                    "The best moments are the ones that take your breath away 💖 {description} #lifestyle"
+                    "Captured moments Γ£¿ {description} #portrait #photooftheday",
+                    "Being my authentic self ≡ƒÆ½ {description} #selfcare #goodvibes",
+                    "The best moments are the ones that take your breath away ≡ƒÆû {description} #lifestyle"
                 ],
                 "food": [
-                    "Foodie heaven 😋 {description} #foodporn #delicious",
-                    "Eating well is a form of self-respect 🍽️ {description} #foodie #yummy",
-                    "Good food, good mood 🍕 {description} #instafood #foodlover"
+                    "Foodie heaven ≡ƒÿï {description} #foodporn #delicious",
+                    "Eating well is a form of self-respect ≡ƒì╜∩╕Å {description} #foodie #yummy",
+                    "Good food, good mood ≡ƒìò {description} #instafood #foodlover"
                 ],
                 "generic": [
-                    "Living in the moment ✨ {description} #liveauthentic #photooftheday",
-                    "Making memories that will last forever 💫 {description} #instagood #blessed",
-                    "Life is beautiful when you focus on what truly matters 🌟 {description} #gratitude"
+                    "Living in the moment Γ£¿ {description} #liveauthentic #photooftheday",
+                    "Making memories that will last forever ≡ƒÆ½ {description} #instagood #blessed",
+                    "Life is beautiful when you focus on what truly matters ≡ƒîƒ {description} #gratitude"
                 ]
             },
             "professional": {
@@ -73,7 +73,7 @@ class InstagramCaptionGenerator:
             "minimal": {
                 "generic": [
                     "{description}",
-                    "Present moment. ✨",
+                    "Present moment. Γ£¿",
                     "Simplicity is the ultimate sophistication."
                 ]
             }
@@ -409,21 +409,31 @@ def setup_ui():
 
 def main():
     """Main function to run the application"""
-    # Check if running in GUI or command line mode
-    if os.environ.get("DISPLAY", "") or os.name == "nt":  # GUI mode
-        app = setup_ui()
-        app.mainloop()
-    else:
-        # Command line mode
-        print("Instagram Caption Generator")
-        print("==========================")
-        caption_gen = InstagramCaptionGenerator()
-        
-        image_path = caption_gen.load_image()
-        if image_path:
-            final_caption = caption_gen.generate_final_caption(image_path)
-            print("\n✨ Perfect Instagram Caption: " + final_caption)
+    try:
+        # Check if running in GUI or command line mode
+        if os.environ.get("DISPLAY", "") or os.name == "nt":  # GUI mode
+            app = setup_ui()
+            app.mainloop()
+        else:
+            # Command line mode
+            print("Instagram Caption Generator")
+            print("==========================")
+            caption_gen = InstagramCaptionGenerator()
+            
+            image_path = caption_gen.load_image()
+            if image_path:
+                final_caption = caption_gen.generate_final_caption(image_path)
+                print("\n✨ Perfect Instagram Caption: " + final_caption)
+    except KeyboardInterrupt:
+        print("\nProgram interrupted by user. Exiting gracefully...")
+        # If you're using tkinter, you might need to explicitly destroy the root window
+        try:
+            if 'app' in locals() and hasattr(app, 'destroy'):
+                app.destroy()
+        except:
+            pass
+    except Exception as e:
+        print(f"\nAn error occurred: {e}")
 
 if __name__ == "__main__":
     main()
-

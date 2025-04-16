@@ -34,33 +34,12 @@ def on_enter(e):
 def on_leave(e):
     e.widget.config(style="TButton")
 
-def toggle_mode():
-    global btn_style_light, btn_style_dark, mode_button
-    if root.option_get('theme', 'light') == 'light':
-        # Switch to dark mode
-        mode_button.config(text="🌞 Day Mode")
-        root.option_add('theme', 'dark')
-        style.configure("TButton", background="#555", foreground="#ffffff")
-        style.configure("Hovered.TButton", background="#444")
-    else:
-        # Switch back to light mode
-        mode_button.config(text="🌙 Night Mode")
-        root.option_add('theme', 'light')
-        style.configure("TButton", background="#f9d6e4", foreground="#6a0572")
-        style.configure("Hovered.TButton", background="#f5c6e0")
-    
-    # Update all button styles
-    for btn in buttons_list:
-        btn.config(style="TButton")
-
 # Create main window
 root = tk.Tk()
 root.title("💖 Kawaii Scientific Calculator 💖")
 root.resizable(False, False)
 
-# Start with light mode
-root.option_add('theme', 'light')
-
+# Start with light mode (No night mode logic needed)
 root.configure(bg="#ffe6f0")
 
 # Add custom style for rounded buttons and hover effects
@@ -88,7 +67,7 @@ buttons = [
     ['C', '=', '(', ')', '❤️', '⭐']
 ]
 
-# Create buttons and keep track of them for night mode toggle
+# Create buttons
 buttons_list = []
 for r, row in enumerate(buttons, 1):
     for c, char in enumerate(row):
@@ -99,10 +78,6 @@ for r, row in enumerate(buttons, 1):
             btn.bind("<Enter>", on_enter)
             btn.bind("<Leave>", on_leave)
             buttons_list.append(btn)
-
-# Add Day/Night toggle button
-mode_button = ttk.Button(root, text="🌙 Night Mode", style="TButton", command=toggle_mode)
-mode_button.grid(row=6, column=0, columnspan=6, pady=10)
 
 # Keyboard Bindings
 root.bind('<Return>', evaluate_expression)

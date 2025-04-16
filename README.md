@@ -12,10 +12,10 @@ Here's a peek at some of the files in this repo:<br>
 | 'image_caption.py'  | Python script for image captioning 🖼️📝 |<br>
 | 'text.txt'          | Just a text file with some notes 📝      |<br>
  🚀 Goals
-- Apply AIML concepts to practical assignments
-- Learn through building
-- Keep things clean, commented, and beginner-friendly
-- Have fun while doing it! 🎉<br>
+Apply AIML concepts to practical assignments<br>
+Learn through building<br>
+Keep things clean, commented, and beginner-friendly<br>
+Have fun while doing it! 🎉<br>
 🤝 Contributions<br>
 Since this is mostly academic work, contributions are limited for now—but feel free to open an issue or drop suggestions! Constructive feedback is always welcome. 🙌<br>
 📌 Note

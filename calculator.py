@@ -58,6 +58,10 @@ def toggle_mode():
     root.configure(bg=bg_color)
     entry.config(bg=entry_bg, fg=entry_fg)
 
+    # Update button styles based on mode
+    for btn in buttons_list:
+        btn.config(bg=btn_bg, fg=btn_fg)
+        
 # Create main window
 root = tk.Tk()
 root.title("💖 Kawaii Scientific Calculator 💖")
@@ -80,7 +84,7 @@ style.configure("TButton",
                 font=("Comic Sans MS", 16),
                 relief="flat", 
                 padding=10, 
-                width=5, 
+                width=6,  # Increased width for bigger buttons
                 background=btn_bg, 
                 foreground=btn_fg)
 style.configure("Hovered.TButton", background="#f5c6e0")
@@ -99,7 +103,8 @@ buttons = [
     ['C', '=', '(', ')', '❤️', '⭐']
 ]
 
-# Create buttons
+# Create buttons and keep track of them for night mode toggle
+buttons_list = []
 for r, row in enumerate(buttons, 1):
     for c, char in enumerate(row):
         if char:
@@ -108,6 +113,7 @@ for r, row in enumerate(buttons, 1):
             btn.grid(row=r, column=c, padx=6, pady=6)
             btn.bind("<Enter>", on_enter)
             btn.bind("<Leave>", on_leave)
+            buttons_list.append(btn)
 
 # Add Day/Night toggle button
 mode_button = ttk.Button(root, text="🌙 Night Mode", style="TButton", command=toggle_mode)

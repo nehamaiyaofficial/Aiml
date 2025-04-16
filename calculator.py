@@ -1,36 +1,18 @@
 def calculator():
-    print("Simple Calculator")
-    print("-----------------")
-    print("Select operation:")
-    print("1. Add")
-    print("2. Subtract")
-    print("3. Multiply")
-    print("4. Divide")
+    print("🧮 Simple Calculator")
+    print("Type a math expression like 2 + 3 * 4")
+    print("Type 'exit' to quit\n")
 
-    choice = input("Enter choice (1/2/3/4): ")
-
-    if choice not in ['1', '2', '3', '4']:
-        print("Invalid input!")
-        return
-
-    try:
-        num1 = float(input("Enter first number: "))
-        num2 = float(input("Enter second number: "))
-    except ValueError:
-        print("Invalid number!")
-        return
-
-    if choice == '1':
-        print(f"{num1} + {num2} = {num1 + num2}")
-    elif choice == '2':
-        print(f"{num1} - {num2} = {num1 - num2}")
-    elif choice == '3':
-        print(f"{num1} * {num2} = {num1 * num2}")
-    elif choice == '4':
-        if num2 == 0:
-            print("Error: Division by zero!")
-        else:
-            print(f"{num1} / {num2} = {num1 / num2}")
+    while True:
+        expr = input(">>> ")
+        if expr.lower() == "exit":
+            print("Goodbye!")
+            break
+        try:
+            result = eval(expr)
+            print("= ", result)
+        except:
+            print("Invalid expression. Please try again.")
 
 # Run the calculator
 calculator()

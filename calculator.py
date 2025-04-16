@@ -71,5 +71,5 @@ for r, row in enumerate(buttons, 1):
     for c, char in enumerate(row):
         if char:
             btn = tk.Button(root, text=char, width=5, height=2, font=('Arial', 18),
-                            bg=btn_color, fg=btn_text, activebackground="#444", activeforeground="white"
+                            bg=btn_color, fg=btn_text, activebackground="#444", activeforeground="white")
 

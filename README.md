@@ -5,13 +5,14 @@ This repo is a curated collection of mini-projects, assignments, and code experi
  📁 What's Inside?
 Here's a peek at some of the files in this repo:<br>
 | File                | Description                              |<br>
+|---------------------|------------------------------------------|<br>
 | 'calculator.py'     | A simple calculator script 🧮            |<br>
 | 'chatbot.py'        | A basic chatbot implementation 🤖        |<br>
 | 'converter.py'      | Data conversion utilities 🔄             |<br>
 | 'evaluation.c'      | C program for evaluation logic 📊        | <br>
 | 'image_caption.py'  | Python script for image captioning 🖼️📝 |<br>
 | 'text.txt'          | Just a text file with some notes 📝      |<br>
- 🚀 Goals
+ 🚀 Goals<br>
 Apply AIML concepts to practical assignments<br>
 Learn through building<br>
 Keep things clean, commented, and beginner-friendly<br>

@@ -2,16 +2,12 @@
 
 Hey there! 👋 Welcome to my little corner of GitHub, where all the brainy bits from my **Artificial Intelligence & Machine Learning** coursework live. 🧠💻
 This repo is a curated collection of mini-projects, assignments, and code experiments that I've worked on throughout my AIML academic journey. Whether you're a fellow student, a curious developer, or just passing by—feel free to explore, learn, and even contribute if you'd like! 😊<br>
- 📁 What's Inside?
-Here's a peek at some of the files in this repo:<br>
-| File                | Description                              |<br>
-|---------------------|------------------------------------------|<br>
-| 'calculator.py'     | A simple calculator script 🧮            |<br>
-| 'chatbot.py'        | A basic chatbot implementation 🤖        |<br>
-| 'converter.py'      | Data conversion utilities 🔄             |<br>
-| 'evaluation.c'      | C program for evaluation logic 📊        | <br>
-| 'image_caption.py'  | Python script for image captioning 🖼️📝 |<br>
-| 'text.txt'          | Just a text file with some notes 📝      |<br>
+ 📦 Highlights<br>
+Some cool stuff you’ll find here:<br>
+🧮 A basic calculator built in Python<br>
+ 🤖 A simple chatbot that can carry a short convo<br>
+ 🔄 Pdf converter <br>
+ 🖼️📝 A script that generates captions for images—yes, it tries its best!<br>
  🚀 Goals<br>
 Apply AIML concepts to practical assignments<br>
 Learn through building<br>

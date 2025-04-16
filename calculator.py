@@ -16,7 +16,7 @@ def evaluate_expression(event=None):  # support keyboard Enter
         result = str(eval(expression))
         entry.delete(0, tk.END)
         entry.insert(0, result)
-    except:
+    except Exception as e:
         entry.delete(0, tk.END)
         entry.insert(0, "Error")
 
@@ -42,8 +42,9 @@ def paste_from_clipboard(event=None):
 # Create main window
 root = tk.Tk()
 root.title("Scientific Calculator")
+root.resizable(False, False)
 
-# --- 🌙 DARK MODE ---
+# 🌙 Dark Mode Styling
 bg_color = "#1e1e1e"
 fg_color = "#ffffff"
 btn_color = "#333333"
@@ -63,13 +64,28 @@ buttons = [
     ['4', '5', '6', 'x', 'tan', '√'],
     ['1', '2', '3', '-', 'log', 'ln'],
     ['0', '.', '^', '+', 'π', 'e'],
-    ['C', '=', '', '', '', '']
+    ['C', '=', '(', ')', '', '']
 ]
 
 # Create and place buttons
 for r, row in enumerate(buttons, 1):
     for c, char in enumerate(row):
-        if char:
-            btn = tk.Button(root, text=char, width=5, height=2, font=('Arial', 18),
-                            bg=btn_color, fg=btn_text, activebackground="#444", activeforeground="white")
+        if char:  # skip empty buttons
+            btn = tk.Button(
+                root, text=char, width=5, height=2, font=('Arial', 18),
+                bg=btn_color, fg=btn_text, activebackground="#444", activeforeground="white",
+                command=lambda ch=char: button_click(ch)
+            )
+            btn.grid(row=r, column=c, padx=4, pady=4)
+
+# Keyboard support
+root.bind('<Return>', evaluate_expression)
+root.bind('<KP_Enter>', evaluate_expression)
+root.bind('<Control-c>', copy_to_clipboard)
+root.bind('<Control-C>', copy_to_clipboard)
+root.bind('<Control-v>', paste_from_clipboard)
+root.bind('<Control-V>', paste_from_clipboard)
+
+# Launch the app
+root.mainloop()
 

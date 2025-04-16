@@ -28,12 +28,54 @@ def button_click(symbol):
         entry.insert(tk.END, symbol)
 
 def on_enter(e):
-    e.widget.config(bg="#f8e1ff")
+    e.widget.config(bg="#ffe6f0")
 
 def on_leave(e):
     e.widget.config(bg=btn_bg)
 
-# 💖 Cute color theme
+def toggle_mode():
+    global bg_color, entry_bg, btn_bg, entry_fg, btn_fg
+    if root.option_get('theme', 'light') == 'light':
+        # Switch to dark mode
+        bg_color = "#2d2d2d"
+        entry_bg = "#444"
+        btn_bg = "#555"
+        entry_fg = "#ffffff"
+        btn_fg = "#ffffff"
+        root.option_add('*TButton*highlightBackground', '#333')  # Button border color
+        root.option_add('*TButton*highlightColor', '#333')
+        root.option_add('*TButton*highlightThickness', 0)
+        root.option_add('*Button*background', '#555')
+        root.option_add('*Button*foreground', '#ffffff')
+        root.option_add('*Button*font', 'Comic Sans MS 16')
+        mode_button.config(text="🌞 Day Mode")
+        root.option_add('theme', 'dark')
+    else:
+        # Switch back to light mode
+        bg_color = "#ffe6f0"
+        entry_bg = "#fff0f6"
+        btn_bg = "#f9d6e4"
+        entry_fg = "#6a0572"
+        btn_fg = "#6a0572"
+        root.option_add('*TButton*highlightBackground', '#f8e1ff')
+        root.option_add('*TButton*highlightColor', '#f8e1ff')
+        root.option_add('*TButton*highlightThickness', 0)
+        root.option_add('*Button*background', '#f9d6e4')
+        root.option_add('*Button*foreground', '#6a0572')
+        root.option_add('*Button*font', 'Comic Sans MS 16')
+        mode_button.config(text="🌙 Night Mode")
+        root.option_add('theme', 'light')
+    
+    root.configure(bg=bg_color)
+    entry.config(bg=entry_bg, fg=entry_fg)
+
+# Create main window
+root = tk.Tk()
+root.title("💖 Kawaii Scientific Calculator 💖")
+root.resizable(False, False)
+
+# Start with light mode
+root.option_add('theme', 'light')
 bg_color = "#ffe6f0"
 entry_bg = "#fff0f6"
 entry_fg = "#6a0572"
@@ -41,10 +83,7 @@ btn_bg = "#f9d6e4"
 btn_fg = "#6a0572"
 font_style = ("Comic Sans MS", 16)
 
-root = tk.Tk()
-root.title("💖 Cute Scientific Calculator 💖")
 root.configure(bg=bg_color)
-root.resizable(False, False)
 
 # Entry Field
 entry = tk.Entry(root, font=("Comic Sans MS", 22), width=25, bd=6, relief="groove",
@@ -72,10 +111,14 @@ for r, row in enumerate(buttons, 1):
             btn.bind("<Enter>", on_enter)
             btn.bind("<Leave>", on_leave)
 
+# Add Day/Night toggle button
+mode_button = tk.Button(root, text="🌙 Night Mode", font=("Comic Sans MS", 16), command=toggle_mode)
+mode_button.grid(row=6, column=0, columnspan=6, pady=10)
+
 # Keyboard Bindings
 root.bind('<Return>', evaluate_expression)
 root.bind('<KP_Enter>', evaluate_expression)
 
-# Start GUI
+# Launch the app
 root.mainloop()
 

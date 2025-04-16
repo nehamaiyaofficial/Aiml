@@ -1,7 +1,7 @@
 🎓 Assignments Repository
 
 Hey there! 👋 Welcome to my little corner of GitHub, where all the brainy bits from my **Artificial Intelligence & Machine Learning** coursework live. 🧠💻
-This repo is a curated collection of mini-projects. Whether you're a fellow student, a curious developer, or just passing by—feel free to explore, learn, and even contribute if you'd like! 😊<br>
+This repo is a curated collection of mini-projects.😊<br>
  📦 Highlights<br>
 Some cool stuff you’ll find here:<br>
 🧮 A basic calculator built in Python<br>

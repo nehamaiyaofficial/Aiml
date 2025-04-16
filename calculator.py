@@ -1,5 +1,6 @@
 import tkinter as tk
 import math
+from tkinter import ttk
 
 def evaluate_expression(event=None):
     try:
@@ -28,10 +29,10 @@ def button_click(symbol):
         entry.insert(tk.END, symbol)
 
 def on_enter(e):
-    e.widget.config(bg="#ffe6f0")
+    e.widget.config(style="Hovered.TButton")
 
 def on_leave(e):
-    e.widget.config(bg=btn_bg)
+    e.widget.config(style="TButton")
 
 def toggle_mode():
     global bg_color, entry_bg, btn_bg, entry_fg, btn_fg
@@ -42,12 +43,6 @@ def toggle_mode():
         btn_bg = "#555"
         entry_fg = "#ffffff"
         btn_fg = "#ffffff"
-        root.option_add('*TButton*highlightBackground', '#333')  # Button border color
-        root.option_add('*TButton*highlightColor', '#333')
-        root.option_add('*TButton*highlightThickness', 0)
-        root.option_add('*Button*background', '#555')
-        root.option_add('*Button*foreground', '#ffffff')
-        root.option_add('*Button*font', 'Comic Sans MS 16')
         mode_button.config(text="🌞 Day Mode")
         root.option_add('theme', 'dark')
     else:
@@ -57,12 +52,6 @@ def toggle_mode():
         btn_bg = "#f9d6e4"
         entry_fg = "#6a0572"
         btn_fg = "#6a0572"
-        root.option_add('*TButton*highlightBackground', '#f8e1ff')
-        root.option_add('*TButton*highlightColor', '#f8e1ff')
-        root.option_add('*TButton*highlightThickness', 0)
-        root.option_add('*Button*background', '#f9d6e4')
-        root.option_add('*Button*foreground', '#6a0572')
-        root.option_add('*Button*font', 'Comic Sans MS 16')
         mode_button.config(text="🌙 Night Mode")
         root.option_add('theme', 'light')
     
@@ -85,6 +74,17 @@ font_style = ("Comic Sans MS", 16)
 
 root.configure(bg=bg_color)
 
+# Add custom style for rounded buttons and hover effects
+style = ttk.Style()
+style.configure("TButton",
+                font=("Comic Sans MS", 16),
+                relief="flat", 
+                padding=10, 
+                width=5, 
+                background=btn_bg, 
+                foreground=btn_fg)
+style.configure("Hovered.TButton", background="#f5c6e0")
+
 # Entry Field
 entry = tk.Entry(root, font=("Comic Sans MS", 22), width=25, bd=6, relief="groove",
                  bg=entry_bg, fg=entry_fg, insertbackground=entry_fg, justify='right')
@@ -96,23 +96,21 @@ buttons = [
     ['4', '5', '6', 'x', 'tan', '√'],
     ['1', '2', '3', '-', 'log', 'ln'],
     ['0', '.', '^', '+', 'π', 'e'],
-    ['C', '=', '(', ')', '', '']
+    ['C', '=', '(', ')', '❤️', '⭐']
 ]
 
 # Create buttons
 for r, row in enumerate(buttons, 1):
     for c, char in enumerate(row):
         if char:
-            btn = tk.Button(root, text=char, font=font_style, width=4, height=2,
-                            bg=btn_bg, fg=btn_fg, relief="raised", bd=3,
-                            activebackground="#f5c6e0", activeforeground=btn_fg,
-                            command=lambda ch=char: button_click(ch))
+            btn = ttk.Button(root, text=char, style="TButton",
+                             command=lambda ch=char: button_click(ch))
             btn.grid(row=r, column=c, padx=6, pady=6)
             btn.bind("<Enter>", on_enter)
             btn.bind("<Leave>", on_leave)
 
 # Add Day/Night toggle button
-mode_button = tk.Button(root, text="🌙 Night Mode", font=("Comic Sans MS", 16), command=toggle_mode)
+mode_button = ttk.Button(root, text="🌙 Night Mode", style="TButton", command=toggle_mode)
 mode_button.grid(row=6, column=0, columnspan=6, pady=10)
 
 # Keyboard Bindings

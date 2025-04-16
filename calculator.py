@@ -35,33 +35,24 @@ def on_leave(e):
     e.widget.config(style="TButton")
 
 def toggle_mode():
-    global bg_color, entry_bg, btn_bg, entry_fg, btn_fg
+    global btn_style_light, btn_style_dark, mode_button
     if root.option_get('theme', 'light') == 'light':
         # Switch to dark mode
-        bg_color = "#2d2d2d"
-        entry_bg = "#444"
-        btn_bg = "#555"
-        entry_fg = "#ffffff"
-        btn_fg = "#ffffff"
         mode_button.config(text="🌞 Day Mode")
         root.option_add('theme', 'dark')
+        style.configure("TButton", background="#555", foreground="#ffffff")
+        style.configure("Hovered.TButton", background="#444")
     else:
         # Switch back to light mode
-        bg_color = "#ffe6f0"
-        entry_bg = "#fff0f6"
-        btn_bg = "#f9d6e4"
-        entry_fg = "#6a0572"
-        btn_fg = "#6a0572"
         mode_button.config(text="🌙 Night Mode")
         root.option_add('theme', 'light')
+        style.configure("TButton", background="#f9d6e4", foreground="#6a0572")
+        style.configure("Hovered.TButton", background="#f5c6e0")
     
-    root.configure(bg=bg_color)
-    entry.config(bg=entry_bg, fg=entry_fg)
-
-    # Update button styles based on mode
+    # Update all button styles
     for btn in buttons_list:
-        btn.config(bg=btn_bg, fg=btn_fg)
-        
+        btn.config(style="TButton")
+
 # Create main window
 root = tk.Tk()
 root.title("💖 Kawaii Scientific Calculator 💖")
@@ -69,14 +60,8 @@ root.resizable(False, False)
 
 # Start with light mode
 root.option_add('theme', 'light')
-bg_color = "#ffe6f0"
-entry_bg = "#fff0f6"
-entry_fg = "#6a0572"
-btn_bg = "#f9d6e4"
-btn_fg = "#6a0572"
-font_style = ("Comic Sans MS", 16)
 
-root.configure(bg=bg_color)
+root.configure(bg="#ffe6f0")
 
 # Add custom style for rounded buttons and hover effects
 style = ttk.Style()
@@ -85,13 +70,13 @@ style.configure("TButton",
                 relief="flat", 
                 padding=10, 
                 width=6,  # Increased width for bigger buttons
-                background=btn_bg, 
-                foreground=btn_fg)
+                background="#f9d6e4",  # Light mode background color
+                foreground="#6a0572")  # Light mode foreground color
 style.configure("Hovered.TButton", background="#f5c6e0")
 
 # Entry Field
 entry = tk.Entry(root, font=("Comic Sans MS", 22), width=25, bd=6, relief="groove",
-                 bg=entry_bg, fg=entry_fg, insertbackground=entry_fg, justify='right')
+                 bg="#fff0f6", fg="#6a0572", insertbackground="#6a0572", justify='right')
 entry.grid(row=0, column=0, columnspan=6, padx=10, pady=20)
 
 # Buttons layout

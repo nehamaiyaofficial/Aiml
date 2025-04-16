@@ -1,8 +1,7 @@
 import tkinter as tk
 import math
-from tkinter import messagebox
 
-def evaluate_expression(event=None):  # support keyboard Enter
+def evaluate_expression(event=None):
     try:
         expression = entry.get()
         expression = expression.replace('x', '*').replace('÷', '/').replace('^', '**').replace('√', 'math.sqrt')
@@ -16,7 +15,7 @@ def evaluate_expression(event=None):  # support keyboard Enter
         result = str(eval(expression))
         entry.delete(0, tk.END)
         entry.insert(0, result)
-    except Exception as e:
+    except:
         entry.delete(0, tk.END)
         entry.insert(0, "Error")
 
@@ -28,35 +27,29 @@ def button_click(symbol):
     else:
         entry.insert(tk.END, symbol)
 
-def copy_to_clipboard(event=None):
-    root.clipboard_clear()
-    root.clipboard_append(entry.get())
+def on_enter(e):
+    e.widget.config(bg="#f8e1ff")
 
-def paste_from_clipboard(event=None):
-    try:
-        pasted = root.clipboard_get()
-        entry.insert(tk.END, pasted)
-    except:
-        messagebox.showerror("Error", "Nothing to paste.")
+def on_leave(e):
+    e.widget.config(bg=btn_bg)
 
-# Create main window
+# 💖 Cute color theme
+bg_color = "#ffe6f0"
+entry_bg = "#fff0f6"
+entry_fg = "#6a0572"
+btn_bg = "#f9d6e4"
+btn_fg = "#6a0572"
+font_style = ("Comic Sans MS", 16)
+
 root = tk.Tk()
-root.title("Scientific Calculator")
+root.title("💖 Cute Scientific Calculator 💖")
+root.configure(bg=bg_color)
 root.resizable(False, False)
 
-# 🌙 Dark Mode Styling
-bg_color = "#1e1e1e"
-fg_color = "#ffffff"
-btn_color = "#333333"
-btn_text = "#00ffcc"
-entry_bg = "#2d2d2d"
-
-root.configure(bg=bg_color)
-
-# Entry field
-entry = tk.Entry(root, width=25, font=('Arial', 24), bd=8, relief='flat',
-                 bg=entry_bg, fg=fg_color, insertbackground=fg_color, justify='right')
-entry.grid(row=0, column=0, columnspan=6, padx=10, pady=10)
+# Entry Field
+entry = tk.Entry(root, font=("Comic Sans MS", 22), width=25, bd=6, relief="groove",
+                 bg=entry_bg, fg=entry_fg, insertbackground=entry_fg, justify='right')
+entry.grid(row=0, column=0, columnspan=6, padx=10, pady=20)
 
 # Buttons layout
 buttons = [
@@ -67,25 +60,22 @@ buttons = [
     ['C', '=', '(', ')', '', '']
 ]
 
-# Create and place buttons
+# Create buttons
 for r, row in enumerate(buttons, 1):
     for c, char in enumerate(row):
-        if char:  # skip empty buttons
-            btn = tk.Button(
-                root, text=char, width=5, height=2, font=('Arial', 18),
-                bg=btn_color, fg=btn_text, activebackground="#444", activeforeground="white",
-                command=lambda ch=char: button_click(ch)
-            )
-            btn.grid(row=r, column=c, padx=4, pady=4)
+        if char:
+            btn = tk.Button(root, text=char, font=font_style, width=4, height=2,
+                            bg=btn_bg, fg=btn_fg, relief="raised", bd=3,
+                            activebackground="#f5c6e0", activeforeground=btn_fg,
+                            command=lambda ch=char: button_click(ch))
+            btn.grid(row=r, column=c, padx=6, pady=6)
+            btn.bind("<Enter>", on_enter)
+            btn.bind("<Leave>", on_leave)
 
-# Keyboard support
+# Keyboard Bindings
 root.bind('<Return>', evaluate_expression)
 root.bind('<KP_Enter>', evaluate_expression)
-root.bind('<Control-c>', copy_to_clipboard)
-root.bind('<Control-C>', copy_to_clipboard)
-root.bind('<Control-v>', paste_from_clipboard)
-root.bind('<Control-V>', paste_from_clipboard)
 
-# Launch the app
+# Start GUI
 root.mainloop()
 

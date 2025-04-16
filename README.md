@@ -4,7 +4,7 @@
 Hey there! 👋 Welcome to my little corner of GitHub, where all the brainy bits from my **Artificial Intelligence & Machine Learning** coursework live. 🧠💻
 This repo is a curated collection of mini-projects, assignments, and code experiments that I've worked on throughout my AIML academic journey. Whether you're a fellow student, a curious developer, or just passing by—feel free to explore, learn, and even contribute if you'd like! 😊
  📁 What's Inside?
-Here's a peek at some of the files in this repo:
+Here's a peek at some of the files in this repo:<br>
 | File                | Description                              |
 | 'calculator.py'     | A simple calculator script 🧮            |
 | 'chatbot.py'        | A basic chatbot implementation 🤖        |

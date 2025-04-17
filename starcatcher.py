@@ -48,6 +48,12 @@ def move_basket(dx):
 def move_left(event): move_basket(-MOVE_SPEED)
 def move_right(event): move_basket(MOVE_SPEED)
 
+def return_to_menu():
+    global running
+    running = False
+    canvas.delete("all")
+    splash_screen()
+
 def game_over():
     global running
     running = False
@@ -101,8 +107,8 @@ def start_game(event=None):
     lives_label = canvas.create_text(WIDTH - 10, 10, anchor='ne', fill='red', font=('Comic Sans MS', 16, 'bold'))
     update_labels()
 
-    # Exit Button (no overlap with lives)
-    exit_button = tk.Button(root, text="✖ Exit Game", command=root.destroy,
+    # Exit Button (returns to splash screen instead of closing app)
+    exit_button = tk.Button(root, text="✖ Exit Game", command=return_to_menu,
                             bg="red", fg="white", font=("Arial", 10, "bold"))
     exit_button.place(x=WIDTH - 110, y=40)
 
@@ -121,7 +127,7 @@ def splash_screen():
 # --- Key Bindings ---
 root.bind("<Left>", move_left)
 root.bind("<Right>", move_right)
-root.bind("<Escape>", lambda e: root.destroy())  # Exit on ESC key
+root.bind("<Escape>", lambda e: return_to_menu())  # ESC returns to splash screen
 
 # --- Start ---
 splash_screen()

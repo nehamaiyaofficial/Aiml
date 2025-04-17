@@ -3,7 +3,8 @@ import random
 
 # --- Constants ---
 MOVE_SPEED = 20
-MAX_LIVES = 3
+MAX_LIVES = 5
+POWER_UPS = ["💖", "🕒", "💣"]
 
 # --- Tkinter Setup ---
 root = tk.Tk()
@@ -14,10 +15,10 @@ canvas.pack(fill=tk.BOTH, expand=True)
 # --- Global Variables ---
 score = 0
 lives = MAX_LIVES
+level = 1
 basket = None
 star = None
-score_label = None
-lives_label = None
+falling_items = []
 running = False
 paused = False
 exit_button = None
@@ -37,14 +38,22 @@ def draw_background():
         emoji = random.choice(stars)
         canvas.create_text(x, y, text=emoji, font=("Arial", 8), fill="#444", tags="bg")
 
-def create_star():
+def create_item():
     width, _ = get_dimensions()
     x = random.randint(30, width - 30)
-    return canvas.create_text(x, 0, text=random.choice(["⭐", "🌟", "✨", "💫"]), font=("Arial", 25), fill="white")
+    is_power = random.random() < 0.1  # 10% chance
+    if is_power:
+        symbol = random.choice(POWER_UPS)
+        tag = "powerup"
+    else:
+        symbol = random.choice(["⭐", "🌟", "✨", "💫"])
+        tag = "star"
+    item = canvas.create_text(x, 0, text=symbol, font=("Arial", 25), fill="white", tags=tag)
+    falling_items.append(item)
 
 def update_labels():
-    canvas.itemconfig(score_label, text=f"Score: {score} ⭐")
-    canvas.itemconfig(lives_label, text=f"Lives: {'❤️' * lives}")
+    canvas.itemconfig("score_label", text=f"Score: {score} ⭐  Level: {level}")
+    canvas.itemconfig("lives_label", text=f"Lives: {'❤️' * lives}")
 
 def move_basket(dx):
     if basket is None or not canvas.coords(basket):
@@ -77,60 +86,86 @@ def game_over():
                        font=("Arial", 14), fill="white")
     canvas.bind("<Button-1>", start_game)
 
+def apply_powerup(symbol):
+    global lives, falling_items
+    if symbol == "💖" and lives < MAX_LIVES:
+        lives += 1
+    elif symbol == "🕒":
+[O        root.after(2000, lambda: None)  # placeholder slowdown
+    elif symbol == "💣":
+        for item in falling_items:
+            if canvas.gettags(item)[0] == "star":
+                canvas.delete(item)
+        falling_items = [i for i in falling_items if canvas.gettags(i)[0] != "star"]
+
 def game_loop():
-    global star, score, lives
+    global score, lives, level
 
     if not running or paused:
         return
 
-    # Dynamic difficulty
-    if score <= 10:
-        speed = 6
-    elif score <= 20:
-        speed = 8
-    elif score <= 30:
-        speed = 10
-    else:
-        speed = 12 + score // 10
+    width, height = get_dimensions()
 
-    canvas.move(star, 0, speed)
-    star_x, star_y = canvas.coords(star)
+    # Adjust speed based on level
+    speed = 5 + level
 
-    if star_y >= canvas.winfo_height() - 60:
-        basket_x, _ = canvas.coords(basket)
-        if abs(star_x - basket_x) < 40:
-            score += 1
-        else:
-            lives -= 1
+    for item in falling_items[:]:
+[I        canvas.move(item, 0, speed)
+        x, y = canvas.coords(item)
+        basket_x, basket_y = canvas.coords(basket)
 
-        update_labels()
-        canvas.delete(star)
+        if y >= height - 60 and abs(x - basket_x) < 40:
+            tag = canvas.gettags(item)[0]
+            symbol = canvas.itemcget(item, "text")
+            if tag == "star":
+                score += 1
+            elif tag == "powerup":
+                apply_powerup(symbol)
+            canvas.delete(item)
+            falling_items.remove(item)
 
-        if lives == 0:
-            game_over()
-            return
-        star = create_star()
+            # Level up every 10 points
+            new_level = score // 10 + 1
+            if new_level != level:
+                level = new_level
 
+        elif y > height:
+            tag = canvas.gettags(item)[0]
+            if tag == "star":
+                lives -= 1
+                if lives == 0:
+                    update_labels()
+                    game_over()
+                    return
+            canvas.delete(item)
+            falling_items.remove(item)
+
+    if random.random() < 0.05 + level * 0.01:
+        create_item()
+
+    update_labels()
     root.after(50, game_loop)
 
 def start_game(event=None):
     root.after(100, setup_game)
 
 def setup_game():
-    global basket, star, score_label, lives_label, score, lives, running, exit_button, paused
+    global basket, score, lives, level, running, exit_button, paused, falling_items
 
     canvas.delete("all")
     draw_background()
-    score, lives = 0, MAX_LIVES
+    score, lives, level = 0, MAX_LIVES, 1
     running = True
     paused = False
+    falling_items = []
     canvas.focus_set()
 
     width, height = get_dimensions()
     basket = canvas.create_text(width//2, height - 40, text="🧺", font=("Arial", 30))
-    star = create_star()
-    score_label = canvas.create_text(10, 10, anchor='nw', fill='white', font=("Comic Sans MS", 16, 'bold'))
-    lives_label = canvas.create_text(width - 10, 10, anchor='ne', fill='red', font=("Comic Sans MS", 16, 'bold'))
+    canvas.create_text(10, 10, anchor='nw', fill='white',
+                       font=("Comic Sans MS", 16, 'bold'), text="", tags="score_label")
+    canvas.create_text(width - 10, 10, anchor='ne', fill='red',
+                       font=("Comic Sans MS", 16, 'bold'), text="", tags="lives_label")
     update_labels()
 
     if exit_button:
@@ -150,9 +185,11 @@ def setup_splash():
     w, h = get_dimensions()
     canvas.create_text(w//2, h//2 - 50, text="🌌 Catch the Falling Stars 🌌",
                        font=("Comic Sans MS", 28, "bold"), fill="white")
-    canvas.create_text(w//2, h//2 + 10, text="Move the 🧺 using arrow keys ← →",
+    canvas.create_text(w//2, h//2 + 10, text="Move 🧺 with ← → | Catch stars ✨",
                        font=("Arial", 14), fill="lightblue")
-    canvas.create_text(w//2, h//2 + 50, text="Click to Begin Your Star Adventure ✨",
+    canvas.create_text(w//2, h//2 + 40, text="Power-ups: 💖 Extra Life, 🕒 Slow Time, 💣 Boom!",
+                       font=("Arial", 12), fill="white")
+    canvas.create_text(w//2, h//2 + 80, text="Click to Begin Adventure 🎮",
                        font=("Arial", 14), fill="white")
     canvas.bind("<Button-1>", start_game)
 
@@ -168,7 +205,7 @@ def toggle_pause(event=None):
         show_pause_message()
     else:
         canvas.delete("pause_msg")
-        game_loop()  # Resume loop
+        game_loop()
 
 def show_pause_message():
     w, h = get_dimensions()

@@ -143,5 +143,15 @@ def splash_screen():
 def toggle_fullscreen(event=None):
     global fullscreen
     fullscreen = not fullscreen
-    root.attributes("-fullscreen", fullscreen
+    root.attributes("-fullscreen", fullscreen)
+
+# --- Key Bindings ---
+root.bind("<Left>", move_left)
+root.bind("<Right>", move_right)
+root.bind("<Escape>", return_to_menu)
+root.bind("<F11>", toggle_fullscreen)
+
+# --- Start ---
+splash_screen()
+root.mainloop()
 

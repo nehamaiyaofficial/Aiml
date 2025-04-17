@@ -161,7 +161,7 @@ def setup_game():
     canvas.focus_set()
 
     width, height = get_dimensions()
-    basket = canvas.create_text(width//2, height - 40, text="🧺", font=("Arial", 30))
+    basket = canvas.create_text(width//2, height - 40, text="🧺", font=("Arial", 30), fill="white")
     canvas.create_text(10, 10, anchor='nw', fill='white',
                        font=("Comic Sans MS", 16, 'bold'), text="", tags="score_label")
     canvas.create_text(width - 10, 10, anchor='ne', fill='red',

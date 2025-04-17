@@ -23,7 +23,7 @@ running = False
 exit_button = None
 fullscreen = False
 
-# --- Functions ---
+# --- Utility Functions ---
 def get_dimensions():
     return canvas.winfo_width(), canvas.winfo_height()
 
@@ -104,6 +104,9 @@ def game_loop():
     root.after(50, game_loop)
 
 def start_game(event=None):
+    root.after(100, setup_game)
+
+def setup_game():
     global basket, star, score_label, lives_label, score, lives, running, exit_button
 
     canvas.delete("all")
@@ -119,7 +122,6 @@ def start_game(event=None):
     lives_label = canvas.create_text(width - 10, 10, anchor='ne', fill='red', font=('Comic Sans MS', 16, 'bold'))
     update_labels()
 
-    # Exit Button
     if exit_button:
         exit_button.destroy()
     exit_button = tk.Button(root, text="✖ Exit Game", command=return_to_menu,
@@ -129,6 +131,9 @@ def start_game(event=None):
     game_loop()
 
 def splash_screen():
+    root.after(100, setup_splash)
+
+def setup_splash():
     canvas.delete("all")
     draw_background()
     w, h = get_dimensions()
@@ -151,7 +156,7 @@ root.bind("<Right>", move_right)
 root.bind("<Escape>", return_to_menu)
 root.bind("<F11>", toggle_fullscreen)
 
-# --- Start ---
+# --- Start the Game ---
 splash_screen()
 root.mainloop()
 

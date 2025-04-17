@@ -2,59 +2,76 @@ import tkinter as tk
 import random
 
 # --- Game Constants ---
-WIDTH = 400
-HEIGHT = 500
-STAR_SIZE = 20
-BASKET_WIDTH = 60
-BASKET_HEIGHT = 20
-STAR_SPEED = 10
-MOVE_SPEED = 20
+WIDTH = 500
+HEIGHT = 600
+STAR_SIZE = 30
+BASKET_WIDTH = 80
+BASKET_HEIGHT = 25
+STAR_SPEED = 7
+MOVE_SPEED = 25
 
-# --- Game Setup ---
+# --- Setup Window ---
 root = tk.Tk()
-root.title("🌟 Catch the Falling Stars")
+root.title("🌟 Catch the Falling Stars — Cute Edition 🌈")
 
-canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg="midnight blue")
+canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT)
 canvas.pack()
 
-# --- Draw Basket ---
-basket = canvas.create_rectangle(WIDTH//2 - BASKET_WIDTH//2, HEIGHT - 40,
-                                  WIDTH//2 + BASKET_WIDTH//2, HEIGHT - 40 + BASKET_HEIGHT,
-                                  fill="sandy brown")
+# --- Background Gradient (DIY style) ---
+for i in range(0, HEIGHT, 10):
+    color = f'#{"%02x"%(15+i//3)}{"%02x"%(20+i//5)}80'
+    canvas.create_rectangle(0, i, WIDTH, i + 10, fill=color, outline='')
+
+# --- Emoji Basket ---
+basket_emoji = "🧺"
+basket = canvas.create_text(WIDTH//2, HEIGHT - 40, text=basket_emoji, font=("Arial", 30))
 
 # --- Score Display ---
 score = 0
-score_text = canvas.create_text(10, 10, anchor='nw', fill='white', font=('Arial', 14),
-                                text=f"Score: {score}")
+score_label = canvas.create_text(10, 10, anchor='nw', fill='white', font=('Comic Sans MS', 16, 'bold'),
+                                 text=f"Score: {score} ⭐")
 
-# --- Create Star ---
+# --- Star Spawning ---
 def create_star():
-    x = random.randint(0, WIDTH - STAR_SIZE)
-    return canvas.create_oval(x, 0, x + STAR_SIZE, STAR_SIZE, fill="gold")
+    x = random.randint(30, WIDTH - 30)
+    emoji = random.choice(["⭐", "🌟", "✨", "💫"])
+    return canvas.create_text(x, 0, text=emoji, font=("Arial", 25))
 
 current_star = create_star()
 
-# --- Move Basket ---
-def move_left(event=None):
-    canvas.move(basket, -MOVE_SPEED, 0)
+# --- Basket Movement ---
+def move_basket(dx):
+    x, y = canvas.coords(basket)
+    if 30 < x + dx < WIDTH - 30:
+        canvas.move(basket, dx, 0)
 
-def move_right(event=None):
-    canvas.move(basket, MOVE_SPEED, 0)
+def move_left(event): move_basket(-MOVE_SPEED)
+def move_right(event): move_basket(MOVE_SPEED)
 
 root.bind("<Left>", move_left)
 root.bind("<Right>", move_right)
 
+# --- Catch Animation ---
+def sparkle(x, y):
+    for _ in range(5):
+        emoji = random.choice(["✨", "💖", "💫"])
+        sparkle = canvas.create_text(x + random.randint(-10, 10), y - random.randint(5, 15),
+                                     text=emoji, fill="white", font=("Arial", 10))
+        canvas.after(300, lambda s=sparkle: canvas.delete(s))
+
 # --- Game Loop ---
 def update():
     global current_star, score
-    canvas.move(current_star, 0, STAR_SPEED)
-    pos = canvas.coords(current_star)
 
-    if pos[3] >= HEIGHT - 40:  # Bottom reached
-        basket_coords = canvas.coords(basket)
-        if basket_coords[0] < pos[0] < basket_coords[2] or basket_coords[0] < pos[2] < basket_coords[2]:
+    canvas.move(current_star, 0, STAR_SPEED)
+    star_x, star_y = canvas.coords(current_star)
+
+    if star_y >= HEIGHT - 60:
+        basket_x, basket_y = canvas.coords(basket)
+        if abs(star_x - basket_x) < 40:
             score += 1
-            canvas.itemconfig(score_text, text=f"Score: {score}")
+            sparkle(star_x, star_y)
+            canvas.itemconfig(score_label, text=f"Score: {score} ⭐")
         canvas.delete(current_star)
         current_star = create_star()
 

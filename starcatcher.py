@@ -2,7 +2,6 @@ import tkinter as tk
 import random
 
 # --- Constants ---
-WIDTH, HEIGHT = 500, 600
 MOVE_SPEED = 20
 STAR_SPEED = 6
 MAX_LIVES = 3
@@ -10,8 +9,9 @@ MAX_LIVES = 3
 # --- Tkinter Setup ---
 root = tk.Tk()
 root.title("🌌 Catch the Falling Stars 🌟")
-canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg="#0a0a23")
-canvas.pack()
+root.attributes("-fullscreen", True)  # Fullscreen mode
+canvas = tk.Canvas(root, bg="#0a0a23")
+canvas.pack(fill=tk.BOTH, expand=True)
 
 # --- Global Variables ---
 score = 0
@@ -24,16 +24,22 @@ running = False
 exit_button = None
 
 # --- Functions ---
+def get_dimensions():
+    return canvas.winfo_width(), canvas.winfo_height()
+
 def draw_background():
+    canvas.delete("bg")
     stars = ["✨", "🌟", "💫", "⭐"]
-    for _ in range(80):
-        x = random.randint(0, WIDTH)
-        y = random.randint(0, HEIGHT)
+    width, height = get_dimensions()
+    for _ in range(100):
+        x = random.randint(0, width)
+        y = random.randint(0, height)
         emoji = random.choice(stars)
         canvas.create_text(x, y, text=emoji, font=("Arial", 8), fill="#444", tags="bg")
 
 def create_star():
-    x = random.randint(30, WIDTH - 30)
+    width, _ = get_dimensions()
+    x = random.randint(30, width - 30)
     return canvas.create_text(x, 0, text=random.choice(["⭐", "🌟", "✨", "💫"]), font=("Arial", 25), fill="white")
 
 def update_labels():
@@ -44,7 +50,8 @@ def move_basket(dx):
     if basket is None or not canvas.coords(basket):
         return
     x, y = canvas.coords(basket)
-    if 30 < x + dx < WIDTH - 30:
+    width, _ = get_dimensions()
+    if 30 < x + dx < width - 30:
         canvas.move(basket, dx, 0)
 
 def move_left(event): move_basket(-MOVE_SPEED)
@@ -61,11 +68,12 @@ def game_over():
     running = False
     canvas.delete("all")
     draw_background()
-    canvas.create_text(WIDTH//2, HEIGHT//2 - 40, text="💔 Game Over 💔",
+    w, h = get_dimensions()
+    canvas.create_text(w//2, h//2 - 40, text="💔 Game Over 💔",
                        font=("Comic Sans MS", 26), fill="white")
-    canvas.create_text(WIDTH//2, HEIGHT//2, text=f"Final Score: {score}",
+    canvas.create_text(w//2, h//2, text=f"Final Score: {score}",
                        font=("Arial", 16), fill="gold")
-    canvas.create_text(WIDTH//2, HEIGHT//2 + 50, text="Click to Try Again ✨",
+    canvas.create_text(w//2, h//2 + 50, text="Click to Try Again ✨",
                        font=("Arial", 14), fill="white")
     canvas.bind("<Button-1>", start_game)
 
@@ -78,7 +86,7 @@ def game_loop():
     canvas.move(star, 0, STAR_SPEED)
     star_x, star_y = canvas.coords(star)
 
-    if star_y >= HEIGHT - 60:
+    if star_y >= canvas.winfo_height() - 60:
         basket_x, _ = canvas.coords(basket)
         if abs(star_x - basket_x) < 40:
             score += 1
@@ -102,34 +110,41 @@ def start_game(event=None):
     draw_background()
     score, lives = 0, MAX_LIVES
     running = True
+    canvas.focus_set()
 
-    basket = canvas.create_text(WIDTH//2, HEIGHT - 40, text="🧺", font=("Arial", 30))
+    width, height = get_dimensions()
+    basket = canvas.create_text(width//2, height - 40, text="🧺", font=("Arial", 30))
     star = create_star()
     score_label = canvas.create_text(10, 10, anchor='nw', fill='white', font=('Comic Sans MS', 16, 'bold'))
-    lives_label = canvas.create_text(WIDTH - 10, 10, anchor='ne', fill='red', font=('Comic Sans MS', 16, 'bold'))
+    lives_label = canvas.create_text(width - 10, 10, anchor='ne', fill='red', font=('Comic Sans MS', 16, 'bold'))
     update_labels()
 
     # Exit Button (returns to splash screen)
+    if exit_button:
+        exit_button.destroy()
     exit_button = tk.Button(root, text="✖ Exit Game", command=return_to_menu,
                             bg="red", fg="white", font=("Arial", 10, "bold"))
-    exit_button.place(x=WIDTH - 110, y=40)
+    exit_button.place(x=width - 120, y=50)
 
     game_loop()
 
 def splash_screen():
+    canvas.delete("all")
     draw_background()
-    canvas.create_text(WIDTH//2, HEIGHT//2 - 50, text="🌌 Catch the Falling Stars 🌌",
+    w, h = get_dimensions()
+    canvas.create_text(w//2, h//2 - 50, text="🌌 Catch the Falling Stars 🌌",
                        font=("Comic Sans MS", 28, "bold"), fill="white")
-    canvas.create_text(WIDTH//2, HEIGHT//2 + 10, text="Move the 🧺 using arrow keys ← →",
+    canvas.create_text(w//2, h//2 + 10, text="Move the 🧺 using arrow keys ← →",
                        font=("Arial", 14), fill="lightblue")
-    canvas.create_text(WIDTH//2, HEIGHT//2 + 50, text="Click to Begin Your Star Adventure ✨",
+    canvas.create_text(w//2, h//2 + 50, text="Click to Begin Your Star Adventure ✨",
                        font=("Arial", 14), fill="white")
     canvas.bind("<Button-1>", start_game)
 
 # --- Key Bindings ---
 root.bind("<Left>", move_left)
 root.bind("<Right>", move_right)
-root.bind("<Escape>", lambda e: return_to_menu())  # ESC returns to menu
+root.bind("<Escape>", lambda e: return_to_menu())
+root.bind("<F11>", lambda e: root.attributes("-fullscreen", not root.attributes("-fullscreen")))  # toggle fullscreen
 
 # --- Start ---
 splash_screen()

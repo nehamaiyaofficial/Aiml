@@ -8,6 +8,7 @@ Some cool stuff you’ll find here:<br>
  🤖 A simple chatbot that can carry a short convo<br>
  🔄 Pdf converter <br>
  🖼️📝 A script that generates captions for images—yes, it tries its best!<br>
+ 🎮 Catch the Falling Stars – a cute Python game<br>  
  🚀 Goals<br>
 Apply AIML concepts to practical assignments<br>
 Learn through building<br>

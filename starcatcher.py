@@ -91,7 +91,7 @@ def apply_powerup(symbol):
     if symbol == "💖" and lives < MAX_LIVES:
         lives += 1
     elif symbol == "🕒":
-[O        root.after(2000, lambda: None)  # placeholder slowdown
+        root.after(2000, lambda: None)  # placeholder slowdown
     elif symbol == "💣":
         for item in falling_items:
             if canvas.gettags(item)[0] == "star":
@@ -110,7 +110,7 @@ def game_loop():
     speed = 5 + level
 
     for item in falling_items[:]:
-[I        canvas.move(item, 0, speed)
+        canvas.move(item, 0, speed)
         x, y = canvas.coords(item)
         basket_x, basket_y = canvas.coords(basket)
 

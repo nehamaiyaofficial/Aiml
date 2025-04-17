@@ -9,7 +9,6 @@ MAX_LIVES = 3
 # --- Tkinter Setup ---
 root = tk.Tk()
 root.title("🌌 Catch the Falling Stars 🌟")
-root.attributes("-fullscreen", True)  # Fullscreen mode
 canvas = tk.Canvas(root, bg="#0a0a23")
 canvas.pack(fill=tk.BOTH, expand=True)
 
@@ -22,6 +21,7 @@ score_label = None
 lives_label = None
 running = False
 exit_button = None
+fullscreen = False
 
 # --- Functions ---
 def get_dimensions():
@@ -119,7 +119,7 @@ def start_game(event=None):
     lives_label = canvas.create_text(width - 10, 10, anchor='ne', fill='red', font=('Comic Sans MS', 16, 'bold'))
     update_labels()
 
-    # Exit Button (returns to splash screen)
+    # Exit Button
     if exit_button:
         exit_button.destroy()
     exit_button = tk.Button(root, text="✖ Exit Game", command=return_to_menu,
@@ -140,13 +140,8 @@ def splash_screen():
                        font=("Arial", 14), fill="white")
     canvas.bind("<Button-1>", start_game)
 
-# --- Key Bindings ---
-root.bind("<Left>", move_left)
-root.bind("<Right>", move_right)
-root.bind("<Escape>", lambda e: return_to_menu())
-root.bind("<F11>", lambda e: root.attributes("-fullscreen", not root.attributes("-fullscreen")))  # toggle fullscreen
-
-# --- Start ---
-splash_screen()
-root.mainloop()
+def toggle_fullscreen(event=None):
+    global fullscreen
+    fullscreen = not fullscreen
+    root.attributes("-fullscreen", fullscreen
 

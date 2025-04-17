@@ -95,7 +95,7 @@ def start_game(event=None):
     score, lives = 0, MAX_LIVES
     running = True
 
-    basket = canvas.create_text(WIDTH//2, HEIGHT - 40, text="🧺", font=("Arial", 30))
+    basket = canvas.create_text(WIDTH//2, HEIGHT - 40, text="🧺", font=("Arial", 30), fill="white")
     star = create_star()
     score_label = canvas.create_text(10, 10, anchor='nw', fill='white', font=('Comic Sans MS', 16, 'bold'))
     lives_label = canvas.create_text(WIDTH - 10, 10, anchor='ne', fill='red', font=('Comic Sans MS', 16, 'bold'))

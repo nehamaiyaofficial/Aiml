@@ -95,16 +95,16 @@ def start_game(event=None):
     score, lives = 0, MAX_LIVES
     running = True
 
-    basket = canvas.create_text(WIDTH//2, HEIGHT - 40, text="🧺", font=("Arial", 30), fill="white")
+    basket = canvas.create_text(WIDTH//2, HEIGHT - 40, text="🧺", font=("Arial", 30))
     star = create_star()
     score_label = canvas.create_text(10, 10, anchor='nw', fill='white', font=('Comic Sans MS', 16, 'bold'))
     lives_label = canvas.create_text(WIDTH - 10, 10, anchor='ne', fill='red', font=('Comic Sans MS', 16, 'bold'))
     update_labels()
 
-    # Exit Button
+    # Exit Button (no overlap with lives)
     exit_button = tk.Button(root, text="✖ Exit Game", command=root.destroy,
                             bg="red", fg="white", font=("Arial", 10, "bold"))
-    exit_button.place(x=WIDTH - 100, y=5)
+    exit_button.place(x=WIDTH - 110, y=40)
 
     game_loop()
 
@@ -118,12 +118,12 @@ def splash_screen():
                        font=("Arial", 14), fill="white")
     canvas.bind("<Button-1>", start_game)
 
-# --- Bindings ---
+# --- Key Bindings ---
 root.bind("<Left>", move_left)
 root.bind("<Right>", move_right)
 root.bind("<Escape>", lambda e: root.destroy())  # Exit on ESC key
 
-# --- Start the Game ---
+# --- Start ---
 splash_screen()
 root.mainloop()
 

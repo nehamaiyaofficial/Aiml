@@ -3,7 +3,6 @@ import random
 
 # --- Constants ---
 MOVE_SPEED = 20
-STAR_SPEED = 6
 MAX_LIVES = 3
 
 # --- Tkinter Setup ---
@@ -83,7 +82,17 @@ def game_loop():
     if not running:
         return
 
-    canvas.move(star, 0, STAR_SPEED)
+    # Dynamic difficulty
+    if score <= 10:
+        speed = 6
+    elif score <= 20:
+        speed = 8
+    elif score <= 30:
+        speed = 10
+    else:
+        speed = 12 + score // 10
+
+    canvas.move(star, 0, speed)
     star_x, star_y = canvas.coords(star)
 
     if star_y >= canvas.winfo_height() - 60:
@@ -118,8 +127,8 @@ def setup_game():
     width, height = get_dimensions()
     basket = canvas.create_text(width//2, height - 40, text="🧺", font=("Arial", 30))
     star = create_star()
-    score_label = canvas.create_text(10, 10, anchor='nw', fill='white', font=('Comic Sans MS', 16, 'bold'))
-    lives_label = canvas.create_text(width - 10, 10, anchor='ne', fill='red', font=('Comic Sans MS', 16, 'bold'))
+    score_label = canvas.create_text(10, 10, anchor='nw', fill='white', font=("Comic Sans MS", 16, 'bold'))
+    lives_label = canvas.create_text(width - 10, 10, anchor='ne', fill='red', font=("Comic Sans MS", 16, 'bold'))
     update_labels()
 
     if exit_button:

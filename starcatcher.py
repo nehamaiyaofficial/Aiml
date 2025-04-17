@@ -41,6 +41,8 @@ def update_labels():
     canvas.itemconfig(lives_label, text=f"Lives: {'❤️' * lives}")
 
 def move_basket(dx):
+    if basket is None or not canvas.coords(basket):
+        return
     x, y = canvas.coords(basket)
     if 30 < x + dx < WIDTH - 30:
         canvas.move(basket, dx, 0)
@@ -107,7 +109,7 @@ def start_game(event=None):
     lives_label = canvas.create_text(WIDTH - 10, 10, anchor='ne', fill='red', font=('Comic Sans MS', 16, 'bold'))
     update_labels()
 
-    # Exit Button (returns to splash screen instead of closing app)
+    # Exit Button (returns to splash screen)
     exit_button = tk.Button(root, text="✖ Exit Game", command=return_to_menu,
                             bg="red", fg="white", font=("Arial", 10, "bold"))
     exit_button.place(x=WIDTH - 110, y=40)
@@ -127,7 +129,7 @@ def splash_screen():
 # --- Key Bindings ---
 root.bind("<Left>", move_left)
 root.bind("<Right>", move_right)
-root.bind("<Escape>", lambda e: return_to_menu())  # ESC returns to splash screen
+root.bind("<Escape>", lambda e: return_to_menu())  # ESC returns to menu
 
 # --- Start ---
 splash_screen()

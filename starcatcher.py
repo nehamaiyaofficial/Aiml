@@ -21,6 +21,7 @@ star = None
 score_label = None
 lives_label = None
 running = False
+exit_button = None
 
 # --- Functions ---
 def draw_background():
@@ -87,19 +88,24 @@ def game_loop():
     root.after(50, game_loop)
 
 def start_game(event=None):
-    global basket, star, score_label, lives_label, score, lives, running
+    global basket, star, score_label, lives_label, score, lives, running, exit_button
 
     canvas.delete("all")
     draw_background()
     score, lives = 0, MAX_LIVES
     running = True
 
-    basket = canvas.create_text(WIDTH//2, HEIGHT - 40, text="🧺", font=("Arial", 30), fill="white")
+    basket = canvas.create_text(WIDTH//2, HEIGHT - 40, text="🧺", font=("Arial", 30))
     star = create_star()
     score_label = canvas.create_text(10, 10, anchor='nw', fill='white', font=('Comic Sans MS', 16, 'bold'))
     lives_label = canvas.create_text(WIDTH - 10, 10, anchor='ne', fill='red', font=('Comic Sans MS', 16, 'bold'))
-
     update_labels()
+
+    # Exit Button
+    exit_button = tk.Button(root, text="✖ Exit Game", command=root.destroy,
+                            bg="red", fg="white", font=("Arial", 10, "bold"))
+    exit_button.place(x=WIDTH - 100, y=5)
+
     game_loop()
 
 def splash_screen():
@@ -112,9 +118,10 @@ def splash_screen():
                        font=("Arial", 14), fill="white")
     canvas.bind("<Button-1>", start_game)
 
-# --- Bind Keys ---
+# --- Bindings ---
 root.bind("<Left>", move_left)
 root.bind("<Right>", move_right)
+root.bind("<Escape>", lambda e: root.destroy())  # Exit on ESC key
 
 # --- Start the Game ---
 splash_screen()

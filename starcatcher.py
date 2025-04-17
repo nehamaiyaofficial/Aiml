@@ -19,6 +19,7 @@ star = None
 score_label = None
 lives_label = None
 running = False
+paused = False
 exit_button = None
 fullscreen = False
 
@@ -79,7 +80,7 @@ def game_over():
 def game_loop():
     global star, score, lives
 
-    if not running:
+    if not running or paused:
         return
 
     # Dynamic difficulty
@@ -116,12 +117,13 @@ def start_game(event=None):
     root.after(100, setup_game)
 
 def setup_game():
-    global basket, star, score_label, lives_label, score, lives, running, exit_button
+    global basket, star, score_label, lives_label, score, lives, running, exit_button, paused
 
     canvas.delete("all")
     draw_background()
     score, lives = 0, MAX_LIVES
     running = True
+    paused = False
     canvas.focus_set()
 
     width, height = get_dimensions()
@@ -159,11 +161,29 @@ def toggle_fullscreen(event=None):
     fullscreen = not fullscreen
     root.attributes("-fullscreen", fullscreen)
 
+def toggle_pause(event=None):
+    global paused
+    paused = not paused
+    if paused:
+        show_pause_message()
+    else:
+        canvas.delete("pause_msg")
+        game_loop()  # Resume loop
+
+def show_pause_message():
+    w, h = get_dimensions()
+    canvas.create_text(w//2, h//2, text="⏸️ Paused", font=("Comic Sans MS", 30, "bold"),
+                       fill="white", tags="pause_msg")
+    canvas.create_text(w//2, h//2 + 40, text="Press R to Resume",
+                       font=("Arial", 16), fill="lightblue", tags="pause_msg")
+
 # --- Key Bindings ---
 root.bind("<Left>", move_left)
 root.bind("<Right>", move_right)
 root.bind("<Escape>", return_to_menu)
 root.bind("<F11>", toggle_fullscreen)
+root.bind("<p>", toggle_pause)
+root.bind("<r>", toggle_pause)
 
 # --- Start the Game ---
 splash_screen()

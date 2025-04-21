@@ -56,7 +56,7 @@ def draw_grid():
         for col in range(GRID_SIZE):
             color = GRAY if grid[row][col] == 0 else grid[row][col]
             rect = pygame.Rect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE - MARGIN, CELL_SIZE - MARGIN)
-            pygame.draw.rect(screen, color, rect, border_radius=4)
+            pygame.draw.rect(screen, color, rect, border_radius=8)
             pygame.draw.rect(screen, HIGHLIGHT, rect, 1)
 
 def draw_shape(shape, top_left, color):
@@ -66,7 +66,7 @@ def draw_shape(shape, top_left, color):
                 x = top_left[0] + j * CELL_SIZE
                 y = top_left[1] + i * CELL_SIZE
                 rect = pygame.Rect(x, y, CELL_SIZE - MARGIN, CELL_SIZE - MARGIN)
-                pygame.draw.rect(screen, color, rect, border_radius=4)
+                pygame.draw.rect(screen, color, rect, border_radius=8)
 
 def generate_block():
     shape = random.choice(SHAPES)
@@ -114,7 +114,7 @@ def clear_lines():
         for r in range(GRID_SIZE):
             grid[r][c] = 0
 
-    score += (len(full_rows) + len(full_cols)) * 50
+    score += 30 * (len(full_rows) + len(full_cols))
 
 def draw_score():
     text = font.render(f"Score: {score}", True, WHITE)
@@ -161,12 +161,13 @@ while running:
                     dragging = i
                     offset_x = mx - x
                     offset_y = my - y
+                    break
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if dragging is not None:
                 mx, my = event.pos
-                row = my // CELL_SIZE
-                col = mx // CELL_SIZE
+                row = (my - (my % CELL_SIZE)) // CELL_SIZE
+                col = (mx - (mx % CELL_SIZE)) // CELL_SIZE
                 block = blocks[dragging]
                 if can_place(block['shape'], row, col):
                     place_block(block['shape'], row, col, block['color'])

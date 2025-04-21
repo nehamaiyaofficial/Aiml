@@ -14,8 +14,10 @@ FPS = 60
 
 # Colors
 WHITE = (255, 255, 255)
-GRAY = (30, 30, 30)
+GRAY = (40, 40, 40)
 BG_COLOR = (20, 20, 40)
+HIGHLIGHT = (100, 100, 100)
+BLAST_COLOR = (255, 255, 0)
 BLOCK_COLORS = [
     (255, 100, 100), (100, 255, 100), (100, 100, 255),
     (255, 255, 100), (255, 100, 255), (100, 255, 255)
@@ -48,12 +50,15 @@ font = pygame.font.SysFont("arial", 28)
 grid = [[0] * GRID_SIZE for _ in range(GRID_SIZE)]
 score = 0
 
+# --- Functions ---
 def draw_grid():
     for row in range(GRID_SIZE):
         for col in range(GRID_SIZE):
             color = GRAY if grid[row][col] == 0 else grid[row][col]
             pygame.draw.rect(screen, color, 
                              (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE - MARGIN, CELL_SIZE - MARGIN), border_radius=4)
+            pygame.draw.rect(screen, HIGHLIGHT, 
+                             (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
 
 def draw_shape(shape, top_left, color):
     for i, row in enumerate(shape):
@@ -67,7 +72,7 @@ def draw_shape(shape, top_left, color):
 def generate_block():
     shape = random.choice(SHAPES)
     color = random.choice(BLOCK_COLORS)
-    return {'shape': shape, 'color': color}
+    return {'shape': shape, 'color': color, 'pos': (20, HEIGHT - 150)}
 
 blocks = [generate_block() for _ in range(3)]
 
@@ -92,27 +97,41 @@ def place_block(shape, top, left, color):
 
 def clear_lines():
     global grid, score
-    new_grid = [row for row in grid if any(cell == 0 for cell in row)]
-    cleared_rows = GRID_SIZE - len(new_grid)
-    if cleared_rows:
-        score += cleared_rows * 50
-        for _ in range(cleared_rows):
-            new_grid.insert(0, [0] * GRID_SIZE)
-        grid = new_grid
+    full_rows = [r for r in range(GRID_SIZE) if all(grid[r])]
+    full_cols = [c for c in range(GRID_SIZE) if all(grid[r][c] for r in range(GRID_SIZE))]
+
+    for r in full_rows:
+        for c in range(GRID_SIZE):
+            grid[r][c] = BLAST_COLOR
+
+    for c in full_cols:
+        for r in range(GRID_SIZE):
+            grid[r][c] = BLAST_COLOR
+
+    pygame.display.update()
+    pygame.time.delay(150)
+
+    for r in full_rows:
+        grid[r] = [0] * GRID_SIZE
+    for c in full_cols:
+        for r in range(GRID_SIZE):
+            grid[r][c] = 0
+
+    score += (len(full_rows) + len(full_cols)) * 50
 
 def draw_score():
     text = font.render(f"Score: {score}", True, WHITE)
     screen.blit(text, (10, HEIGHT - 80))
 
 def draw_blocks():
-    start_y = HEIGHT - 150
-    for idx, block in enumerate(blocks):
-        x = 20 + idx * 180
-        draw_shape(block['shape'], (x, start_y), block['color'])
+    for block in blocks:
+        draw_shape(block['shape'], block['pos'], block['color'])
+
+# --- Drag variables ---
+dragging = None
+offset_x = offset_y = 0
 
 # --- Main Loop ---
-selected = None
-
 running = True
 while running:
     screen.fill(BG_COLOR)
@@ -125,31 +144,36 @@ while running:
             running = False
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            mx, my = pygame.mouse.get_pos()
+            mx, my = event.pos
+            for i, block in enumerate(blocks):
+                x, y = block['pos']
+                w = len(block['shape'][0]) * CELL_SIZE
+                h = len(block['shape']) * CELL_SIZE
+                if x <= mx <= x + w and y <= my <= y + h:
+                    dragging = i
+                    offset_x = mx - x
+                    offset_y = my - y
 
-            # Block selection
-            if my > HEIGHT - 150:
-                for idx, block in enumerate(blocks):
-                    bx = 20 + idx * 180
-                    by = HEIGHT - 150
-                    bw = len(block['shape'][0]) * CELL_SIZE
-                    bh = len(block['shape']) * CELL_SIZE
-                    if bx <= mx <= bx + bw and by <= my <= by + bh:
-                        selected = idx
-
-            # Grid placement
-            elif selected is not None:
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if dragging is not None:
+                mx, my = event.pos
                 row = my // CELL_SIZE
                 col = mx // CELL_SIZE
-                block = blocks[selected]
+                block = blocks[dragging]
                 if can_place(block['shape'], row, col):
                     place_block(block['shape'], row, col, block['color'])
-                    blocks[selected] = generate_block()
-                    selected = None
+                    blocks[dragging] = generate_block()
+                else:
+                    blocks[dragging]['pos'] = (20 + dragging * 180, HEIGHT - 150)
+                dragging = None
+
+        elif event.type == pygame.MOUSEMOTION:
+            if dragging is not None:
+                mx, my = event.pos
+                blocks[dragging]['pos'] = (mx - offset_x, my - offset_y)
 
     pygame.display.flip()
     clock.tick(FPS)
 
 pygame.quit()
 sys.exit()
-

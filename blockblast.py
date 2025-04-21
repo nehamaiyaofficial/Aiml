@@ -68,13 +68,10 @@ def draw_shape(shape, top_left, color):
                 rect = pygame.Rect(x, y, CELL_SIZE - MARGIN, CELL_SIZE - MARGIN)
                 pygame.draw.rect(screen, color, rect, border_radius=4)
 
-
 def generate_block():
     shape = random.choice(SHAPES)
     color = random.choice(BLOCK_COLORS)
-    return {'shape': shape, 'color': color, 'pos': (20, HEIGHT - 80)}
-
-blocks = [generate_block() for _ in range(3)]
+    return {'shape': shape, 'color': color, 'pos': None, 'placed': False}
 
 def can_place(shape, top, left):
     for i, row in enumerate(shape):
@@ -125,7 +122,16 @@ def draw_score():
 
 def draw_blocks():
     for block in blocks:
-        draw_shape(block['shape'], block['pos'], block['color'])
+        if not block['placed']:
+            draw_shape(block['shape'], block['pos'], block['color'])
+
+def all_blocks_placed():
+    return all(block['placed'] for block in blocks)
+
+# --- Setup initial blocks ---
+blocks = [generate_block() for _ in range(3)]
+for i, block in enumerate(blocks):
+    block['pos'] = (20 + i * 180, HEIGHT - 80)
 
 # --- Drag variables ---
 dragging = None
@@ -146,6 +152,8 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = event.pos
             for i, block in enumerate(blocks):
+                if block['placed']:
+                    continue
                 x, y = block['pos']
                 w = len(block['shape'][0]) * CELL_SIZE
                 h = len(block['shape']) * CELL_SIZE
@@ -162,10 +170,15 @@ while running:
                 block = blocks[dragging]
                 if can_place(block['shape'], row, col):
                     place_block(block['shape'], row, col, block['color'])
-                    blocks[dragging] = generate_block()
+                    block['placed'] = True
                 else:
-                    blocks[dragging]['pos'] = (20 + dragging * 180, HEIGHT - 80)
+                    block['pos'] = (20 + dragging * 180, HEIGHT - 80)
                 dragging = None
+
+                if all_blocks_placed():
+                    blocks = [generate_block() for _ in range(3)]
+                    for i, block in enumerate(blocks):
+                        block['pos'] = (20 + i * 180, HEIGHT - 80)
 
         elif event.type == pygame.MOUSEMOTION:
             if dragging is not None:

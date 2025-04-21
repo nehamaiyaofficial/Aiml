@@ -6,16 +6,16 @@ import random
 pygame.init()
 
 # --- Constants ---
-WIDTH, HEIGHT = 600, 700
 GRID_SIZE = 10
-CELL_SIZE = WIDTH // GRID_SIZE
-MARGIN = 5
+CELL_SIZE = 60
+WIDTH, HEIGHT = CELL_SIZE * GRID_SIZE, CELL_SIZE * GRID_SIZE + 100
+MARGIN = 4
 FPS = 60
 
 # Colors
 WHITE = (255, 255, 255)
-GRAY = (40, 40, 40)
-BG_COLOR = (20, 20, 40)
+GRAY = (50, 50, 50)
+BG_COLOR = (30, 30, 60)
 HIGHLIGHT = (100, 100, 100)
 BLAST_COLOR = (255, 255, 0)
 BLOCK_COLORS = [
@@ -55,10 +55,9 @@ def draw_grid():
     for row in range(GRID_SIZE):
         for col in range(GRID_SIZE):
             color = GRAY if grid[row][col] == 0 else grid[row][col]
-            pygame.draw.rect(screen, color, 
-                             (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE - MARGIN, CELL_SIZE - MARGIN), border_radius=4)
-            pygame.draw.rect(screen, HIGHLIGHT, 
-                             (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
+            rect = pygame.Rect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE - MARGIN, CELL_SIZE - MARGIN)
+            pygame.draw.rect(screen, color, rect, border_radius=4)
+            pygame.draw.rect(screen, HIGHLIGHT, rect, 1)
 
 def draw_shape(shape, top_left, color):
     for i, row in enumerate(shape):
@@ -66,13 +65,14 @@ def draw_shape(shape, top_left, color):
             if val:
                 x = top_left[0] + j * CELL_SIZE
                 y = top_left[1] + i * CELL_SIZE
-                pygame.draw.rect(screen, color, 
-                                 (x, y, CELL_SIZE - MARGIN, CELL_SIZE - MARGIN), border_radius=4)
+                rect = pygame.Rect(x, y, CELL_SIZE - MARGIN, CELL_SIZE - MARGIN)
+                pygame.draw.rect(screen, color, rect, border_radius=4)
+
 
 def generate_block():
     shape = random.choice(SHAPES)
     color = random.choice(BLOCK_COLORS)
-    return {'shape': shape, 'color': color, 'pos': (20, HEIGHT - 150)}
+    return {'shape': shape, 'color': color, 'pos': (20, HEIGHT - 80)}
 
 blocks = [generate_block() for _ in range(3)]
 
@@ -164,7 +164,7 @@ while running:
                     place_block(block['shape'], row, col, block['color'])
                     blocks[dragging] = generate_block()
                 else:
-                    blocks[dragging]['pos'] = (20 + dragging * 180, HEIGHT - 150)
+                    blocks[dragging]['pos'] = (20 + dragging * 180, HEIGHT - 80)
                 dragging = None
 
         elif event.type == pygame.MOUSEMOTION:
@@ -177,3 +177,4 @@ while running:
 
 pygame.quit()
 sys.exit()
+

@@ -6,7 +6,7 @@ import random
 pygame.init()
 
 # Screen settings
-WIDTH, HEIGHT = 400, 550
+WIDTH, HEIGHT = 400, 600
 LINE_WIDTH = 4
 BOARD_ROWS = 3
 BOARD_COLS = 3
@@ -64,7 +64,6 @@ def is_board_full():
     return all(all(cell is not None for cell in row) for row in board)
 
 def check_winner(player):
-    # Horizontal, Vertical and Diagonal Check
     for row in range(BOARD_ROWS):
         if all(board[row][col] == player for col in range(BOARD_COLS)):
             return (row, 'row')
@@ -91,8 +90,8 @@ def draw_button(text, x, y, w, h):
 
 def draw_mode_selection():
     screen.fill(BG_COLOR)
-    draw_button("Player vs Computer", 100, 150, 200, 50)
-    draw_button("2 Players", 100, 250, 200, 50)
+    draw_button("Player vs Computer", 75, 150, 250, 60)
+    draw_button("2 Players", 75, 250, 250, 60)
     pygame.display.update()
 
 def draw_win_line(info):
@@ -108,6 +107,10 @@ def draw_win_line(info):
             pygame.draw.line(screen, WIN_LINE_COLOR, (20, 20), (WIDTH - 20, WIDTH - 20), 8)
         elif direction == 'antidiag':
             pygame.draw.line(screen, WIN_LINE_COLOR, (WIDTH - 20, 20), (20, WIDTH - 20), 8)
+
+def draw_bottom_buttons():
+    draw_button("Replay", 50, 500, 120, 50)
+    draw_button("Quit", 230, 500, 120, 50)
 
 running = True
 player = 'X'
@@ -125,10 +128,10 @@ while not mode_selected:
             sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = pygame.mouse.get_pos()
-            if 100 <= mx <= 300 and 150 <= my <= 200:
+            if 75 <= mx <= 325 and 150 <= my <= 210:
                 mode = '1'
                 mode_selected = True
-            elif 100 <= mx <= 300 and 250 <= my <= 300:
+            elif 75 <= mx <= 325 and 250 <= my <= 310:
                 mode = '2'
                 mode_selected = True
 
@@ -137,20 +140,34 @@ screen.fill(BG_COLOR)
 draw_lines()
 
 while running:
+    screen.fill(BG_COLOR)
+    draw_lines()
+    draw_figures()
+    if game_over or is_board_full():
+        draw_bottom_buttons()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        if not game_over:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouseX, mouseY = event.pos
-                clicked_row = mouseY // SQUARE_SIZE
-                clicked_col = mouseX // SQUARE_SIZE
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mx, my = pygame.mouse.get_pos()
+
+            if game_over or is_board_full():
+                if 50 <= mx <= 170 and 500 <= my <= 550:
+                    board = [[None for _ in range(BOARD_COLS)] for _ in range(BOARD_ROWS)]
+                    game_over = False
+                    player = 'X'
+                    winner_info = None
+                elif 230 <= mx <= 350 and 500 <= my <= 550:
+                    pygame.quit()
+                    sys.exit()
+            else:
+                clicked_row = my // SQUARE_SIZE
+                clicked_col = mx // SQUARE_SIZE
 
                 if clicked_row < BOARD_ROWS and clicked_col < BOARD_COLS:
                     if available_square(clicked_row, clicked_col):
                         mark_square(clicked_row, clicked_col, player)
-                        draw_figures()
                         winner_info = check_winner(player)
 
                         if winner_info:
@@ -162,17 +179,4 @@ while running:
                             if mode == '1' and player == 'X':
                                 player = 'O'
                                 computer_move()
-                                draw_figures()
-                                winner_info = check_winner('O')
-                                if winner_info:
-                                    draw_win_line(winner_info)
-                                    game_over = True
-                                player = 'X'
-                            else:
-                                player = 'O' if player == 'X' else 'X'
-
-    pygame.display.update()
-
-pygame.quit()
-sys.exit()
-
+                                winner_info = check_winner

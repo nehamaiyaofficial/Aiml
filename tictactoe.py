@@ -5,55 +5,60 @@ import random
 # Initialize Pygame
 pygame.init()
 
-# Screen settings
-WIDTH, HEIGHT = 400, 600
-BOARD_ROWS = 3
-BOARD_COLS = 3
-SQUARE_SIZE = WIDTH // BOARD_COLS
+# Constants
+WIDTH, HEIGHT = 500, 600
+ROWS, COLS = 3, 3
+SQSIZE = WIDTH // COLS
 LINE_WIDTH = 5
-CIRCLE_RADIUS = SQUARE_SIZE // 3
+CIRCLE_RADIUS = SQSIZE // 3
 CIRCLE_WIDTH = 10
 CROSS_WIDTH = 10
-SPACE = SQUARE_SIZE // 5
+SPACE = SQSIZE // 4
 
 # Colors
-BG_COLOR = (255, 255, 255)
-LINE_COLOR = (200, 200, 200)
-CIRCLE_COLOR = (85, 170, 255)
-CROSS_COLOR = (255, 85, 170)
-BUTTON_COLOR = (173, 216, 230)
-BUTTON_TEXT_COLOR = (0, 0, 0)
-WIN_LINE_COLOR = (255, 165, 0)
+BG_COLOR = (250, 248, 239)
+LINE_COLOR = (187, 173, 160)
+CIRCLE_COLOR = (84, 191, 255)
+CROSS_COLOR = (255, 105, 180)
+BUTTON_COLOR = (147, 112, 219)
+TEXT_COLOR = (255, 255, 255)
+WIN_LINE_COLOR = (255, 99, 71)
 
 # Setup screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Cute Tic Tac Toe')
+pygame.display.set_caption('Aesthetic Tic Tac Toe')
 
 # Fonts
-font = pygame.font.SysFont('Comic Sans MS', 30)
-small_font = pygame.font.SysFont('Comic Sans MS', 24)
+font = pygame.font.SysFont('Comic Sans MS', 40)
+small_font = pygame.font.SysFont('Comic Sans MS', 30)
 
 # Board
-board = [[None for _ in range(BOARD_COLS)] for _ in range(BOARD_ROWS)]
+board = [[None for _ in range(COLS)] for _ in range(ROWS)]
 
-# Draw lines
-def draw_lines():
-    for i in range(1, BOARD_ROWS):
-        pygame.draw.line(screen, LINE_COLOR, (0, i * SQUARE_SIZE), (WIDTH, i * SQUARE_SIZE), LINE_WIDTH)
-        pygame.draw.line(screen, LINE_COLOR, (i * SQUARE_SIZE, 0), (i * SQUARE_SIZE, WIDTH), LINE_WIDTH)
+# Draw grid
+def draw_grid():
+    screen.fill(BG_COLOR)
+    for x in range(1, COLS):
+        pygame.draw.line(screen, LINE_COLOR, (x * SQSIZE, 0), (x * SQSIZE, WIDTH), LINE_WIDTH)
+    for y in range(1, ROWS):
+        pygame.draw.line(screen, LINE_COLOR, (0, y * SQSIZE), (WIDTH, y * SQSIZE), LINE_WIDTH)
 
-def draw_figures():
-    for row in range(BOARD_ROWS):
-        for col in range(BOARD_COLS):
+# Draw X and O
+def draw_marks():
+    for row in range(ROWS):
+        for col in range(COLS):
             if board[row][col] == 'X':
-                pygame.draw.line(screen, CROSS_COLOR, (col * SQUARE_SIZE + SPACE, row * SQUARE_SIZE + SPACE),
-                                 (col * SQUARE_SIZE + SQUARE_SIZE - SPACE, row * SQUARE_SIZE + SQUARE_SIZE - SPACE), CROSS_WIDTH)
-                pygame.draw.line(screen, CROSS_COLOR, (col * SQUARE_SIZE + SPACE, row * SQUARE_SIZE + SQUARE_SIZE - SPACE),
-                                 (col * SQUARE_SIZE + SQUARE_SIZE - SPACE, row * SQUARE_SIZE + SPACE), CROSS_WIDTH)
+                start_desc = (col * SQSIZE + SPACE, row * SQSIZE + SPACE)
+                end_desc = (col * SQSIZE + SQSIZE - SPACE, row * SQSIZE + SQSIZE - SPACE)
+                pygame.draw.line(screen, CROSS_COLOR, start_desc, end_desc, CROSS_WIDTH)
+                start_asc = (col * SQSIZE + SPACE, row * SQSIZE + SQSIZE - SPACE)
+                end_asc = (col * SQSIZE + SQSIZE - SPACE, row * SQSIZE + SPACE)
+                pygame.draw.line(screen, CROSS_COLOR, start_asc, end_asc, CROSS_WIDTH)
             elif board[row][col] == 'O':
-                pygame.draw.circle(screen, CIRCLE_COLOR, (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE + SQUARE_SIZE//2),
-                                   CIRCLE_RADIUS, CIRCLE_WIDTH)
+                center = (col * SQSIZE + SQSIZE//2, row * SQSIZE + SQSIZE//2)
+                pygame.draw.circle(screen, CIRCLE_COLOR, center, CIRCLE_RADIUS, CIRCLE_WIDTH)
 
+# Helpers
 def mark_square(row, col, player):
     board[row][col] = player
 
@@ -63,55 +68,52 @@ def available_square(row, col):
 def is_board_full():
     return all(all(cell is not None for cell in row) for row in board)
 
-def check_winner(player):
-    for row in range(BOARD_ROWS):
-        if all(board[row][col] == player for col in range(BOARD_COLS)):
-            return (row, 'row')
-    for col in range(BOARD_COLS):
-        if all(board[row][col] == player for row in range(BOARD_ROWS)):
-            return (col, 'col')
-    if all(board[i][i] == player for i in range(BOARD_ROWS)):
-        return (0, 'diag')
-    if all(board[i][BOARD_ROWS-1-i] == player for i in range(BOARD_ROWS)):
-        return (0, 'antidiag')
+def check_win(player):
+    for row in range(ROWS):
+        if all(board[row][col] == player for col in range(COLS)):
+            return ('row', row)
+    for col in range(COLS):
+        if all(board[row][col] == player for row in range(ROWS)):
+            return ('col', col)
+    if all(board[i][i] == player for i in range(ROWS)):
+        return ('diag', 0)
+    if all(board[i][COLS - i - 1] == player for i in range(ROWS)):
+        return ('antidiag', 0)
     return None
-
-def computer_move():
-    available = [(r, c) for r in range(BOARD_ROWS) for c in range(BOARD_COLS) if available_square(r, c)]
-    if available:
-        move = random.choice(available)
-        mark_square(move[0], move[1], 'O')
-
-def draw_button(text, x, y, w, h):
-    pygame.draw.rect(screen, BUTTON_COLOR, (x, y, w, h), border_radius=12)
-    label = small_font.render(text, True, BUTTON_TEXT_COLOR)
-    label_rect = label.get_rect(center=(x + w/2, y + h/2))
-    screen.blit(label, label_rect)
-
-def draw_mode_selection():
-    screen.fill(BG_COLOR)
-    draw_button("Play vs Computer", 75, 150, 250, 60)
-    draw_button("2 Player Mode", 75, 250, 250, 60)
-    pygame.display.update()
 
 def draw_win_line(info):
     if info:
-        idx, direction = info
+        direction, idx = info
         if direction == 'row':
-            y = idx * SQUARE_SIZE + SQUARE_SIZE // 2
-            pygame.draw.line(screen, WIN_LINE_COLOR, (20, y), (WIDTH - 20, y), 8)
+            y = idx * SQSIZE + SQSIZE // 2
+            pygame.draw.line(screen, WIN_LINE_COLOR, (20, y), (WIDTH - 20, y), 10)
         elif direction == 'col':
-            x = idx * SQUARE_SIZE + SQUARE_SIZE // 2
-            pygame.draw.line(screen, WIN_LINE_COLOR, (x, 20), (x, WIDTH - 20), 8)
+            x = idx * SQSIZE + SQSIZE // 2
+            pygame.draw.line(screen, WIN_LINE_COLOR, (x, 20), (x, WIDTH - 20), 10)
         elif direction == 'diag':
-            pygame.draw.line(screen, WIN_LINE_COLOR, (20, 20), (WIDTH - 20, WIDTH - 20), 8)
+            pygame.draw.line(screen, WIN_LINE_COLOR, (20, 20), (WIDTH - 20, WIDTH - 20), 10)
         elif direction == 'antidiag':
-            pygame.draw.line(screen, WIN_LINE_COLOR, (WIDTH - 20, 20), (20, WIDTH - 20), 8)
+            pygame.draw.line(screen, WIN_LINE_COLOR, (WIDTH - 20, 20), (20, WIDTH - 20), 10)
 
-def draw_bottom_buttons():
-    draw_button("Replay", 40, 520, 140, 50)
-    draw_button("Quit", 220, 520, 140, 50)
+def computer_move():
+    options = [(r, c) for r in range(ROWS) for c in range(COLS) if available_square(r, c)]
+    if options:
+        r, c = random.choice(options)
+        mark_square(r, c, 'O')
 
+def draw_button(text, x, y, w, h):
+    pygame.draw.rect(screen, BUTTON_COLOR, (x, y, w, h), border_radius=12)
+    label = small_font.render(text, True, TEXT_COLOR)
+    label_rect = label.get_rect(center=(x + w//2, y + h//2))
+    screen.blit(label, label_rect)
+
+def draw_menu():
+    screen.fill(BG_COLOR)
+    draw_button("Play vs Computer", 100, 150, 300, 60)
+    draw_button("2 Player Mode", 100, 250, 300, 60)
+    pygame.display.update()
+
+# Game Variables
 running = True
 player = 'X'
 game_over = False
@@ -119,29 +121,30 @@ mode_selected = False
 mode = None
 winner_info = None
 
-# Mode Selection Loop
+# Mode Selection
 while not mode_selected:
-    draw_mode_selection()
+    draw_menu()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
             mx, my = pygame.mouse.get_pos()
-            if 75 <= mx <= 325 and 150 <= my <= 210:
+            if 100 <= mx <= 400 and 150 <= my <= 210:
                 mode = '1'
                 mode_selected = True
-            elif 75 <= mx <= 325 and 250 <= my <= 310:
+            if 100 <= mx <= 400 and 250 <= my <= 310:
                 mode = '2'
                 mode_selected = True
 
 # Main Game Loop
 while running:
-    screen.fill(BG_COLOR)
-    draw_lines()
-    draw_figures()
+    draw_grid()
+    draw_marks()
+
     if game_over or is_board_full():
-        draw_bottom_buttons()
+        draw_button("Replay", 50, 520, 150, 50)
+        draw_button("Quit", 300, 520, 150, 50)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -151,23 +154,21 @@ while running:
             mx, my = pygame.mouse.get_pos()
 
             if game_over or is_board_full():
-                if 40 <= mx <= 180 and 520 <= my <= 570:
-                    board = [[None for _ in range(BOARD_COLS)] for _ in range(BOARD_ROWS)]
-                    game_over = False
+                if 50 <= mx <= 200 and 520 <= my <= 570:
+                    board = [[None for _ in range(COLS)] for _ in range(ROWS)]
                     player = 'X'
+                    game_over = False
                     winner_info = None
-                elif 220 <= mx <= 360 and 520 <= my <= 570:
+                if 300 <= mx <= 450 and 520 <= my <= 570:
                     pygame.quit()
                     sys.exit()
             else:
                 if my < WIDTH:
-                    clicked_row = my // SQUARE_SIZE
-                    clicked_col = mx // SQUARE_SIZE
-
+                    clicked_row = my // SQSIZE
+                    clicked_col = mx // SQSIZE
                     if available_square(clicked_row, clicked_col):
                         mark_square(clicked_row, clicked_col, player)
-                        winner_info = check_winner(player)
-
+                        winner_info = check_win(player)
                         if winner_info:
                             game_over = True
                         elif is_board_full():
@@ -176,7 +177,7 @@ while running:
                             if mode == '1' and player == 'X':
                                 player = 'O'
                                 computer_move()
-                                winner_info = check_winner('O')
+                                winner_info = check_win('O')
                                 if winner_info:
                                     game_over = True
                                 player = 'X'

@@ -184,3 +184,10 @@ while running:
                                 player = 'O' if player == 'X' else 'X'
 
     if winner_info:
+        draw_win_line(winner_info)
+
+    pygame.display.update()
+
+pygame.quit()
+sys.exit()
+

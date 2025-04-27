@@ -32,10 +32,9 @@ board = [[None for _ in range(BOARD_COLS)] for _ in range(BOARD_ROWS)]
 
 # Draw lines
 def draw_lines():
-    pygame.draw.line(screen, LINE_COLOR, (0, SQUARE_SIZE), (WIDTH, SQUARE_SIZE), LINE_WIDTH)
-    pygame.draw.line(screen, LINE_COLOR, (0, 2 * SQUARE_SIZE), (WIDTH, 2 * SQUARE_SIZE), LINE_WIDTH)
-    pygame.draw.line(screen, LINE_COLOR, (SQUARE_SIZE, 0), (SQUARE_SIZE, HEIGHT), LINE_WIDTH)
-    pygame.draw.line(screen, LINE_COLOR, (2 * SQUARE_SIZE, 0), (2 * SQUARE_SIZE, HEIGHT), LINE_WIDTH)
+    for i in range(1, BOARD_ROWS):
+        pygame.draw.line(screen, LINE_COLOR, (0, i * SQUARE_SIZE), (WIDTH, i * SQUARE_SIZE), LINE_WIDTH)
+        pygame.draw.line(screen, LINE_COLOR, (i * SQUARE_SIZE, 0), (i * SQUARE_SIZE, HEIGHT), LINE_WIDTH)
 
 def draw_figures():
     for row in range(BOARD_ROWS):
@@ -46,7 +45,8 @@ def draw_figures():
                 pygame.draw.line(screen, CROSS_COLOR, (col * SQUARE_SIZE + SPACE, row * SQUARE_SIZE + SQUARE_SIZE - SPACE),
                                  (col * SQUARE_SIZE + SQUARE_SIZE - SPACE, row * SQUARE_SIZE + SPACE), CROSS_WIDTH)
             elif board[row][col] == 'O':
-                pygame.draw.circle(screen, CIRCLE_COLOR, (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE + SQUARE_SIZE//2), CIRCLE_RADIUS, CIRCLE_WIDTH)
+                pygame.draw.circle(screen, CIRCLE_COLOR, (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2),
+                                   CIRCLE_RADIUS, CIRCLE_WIDTH)
 
 def mark_square(row, col, player):
     board[row][col] = player
@@ -82,14 +82,42 @@ def computer_move():
         move = random.choice(available)
         mark_square(move[0], move[1], 'O')
 
-# Choose mode
-mode = input("Choose mode: '1' for single-player vs computer, '2' for two players: ")
-player = 'X'
+# Setup selection screen
+mode_selected = False
+mode = None
+font = pygame.font.SysFont(None, 40)
+
+def draw_mode_selection():
+    screen.fill(BG_COLOR)
+    text1 = font.render("Press 1: vs Computer", True, (255, 255, 255))
+    text2 = font.render("Press 2: 2 Players", True, (255, 255, 255))
+    screen.blit(text1, (30, 100))
+    screen.blit(text2, (50, 160))
+    pygame.display.update()
+
 running = True
+player = 'X'
 game_over = False
 
-# Main loop
+# Mode Selection Loop
+draw_mode_selection()
+while not mode_selected:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_1:
+                mode = '1'
+                mode_selected = True
+            elif event.key == pygame.K_2:
+                mode = '2'
+                mode_selected = True
+
+# Start game
 draw_lines()
+
+# Main loop
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

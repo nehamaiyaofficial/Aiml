@@ -22,7 +22,7 @@ CIRCLE_COLOR = (84, 191, 255)
 CROSS_COLOR = (255, 105, 180)
 BUTTON_COLOR = (147, 112, 219)
 TEXT_COLOR = (255, 255, 255)
-WIN_LINE_COLOR = (255, 99, 71)
+WIN_LINE_COLOR = (0, 255, 255)  # Bright Cyan for Aesthetic Look
 
 # Setup screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -81,19 +81,25 @@ def check_win(player):
         return ('antidiag', 0)
     return None
 
-def draw_win_line(info):
+def draw_win_line(info, progress):
     if info:
         direction, idx = info
         if direction == 'row':
             y = idx * SQSIZE + SQSIZE // 2
-            pygame.draw.line(screen, WIN_LINE_COLOR, (20, y), (WIDTH - 20, y), 10)
+            end_x = WIDTH - 20
+            pygame.draw.line(screen, WIN_LINE_COLOR, (20, y), (20 + (end_x - 20) * progress, y), 10)
         elif direction == 'col':
             x = idx * SQSIZE + SQSIZE // 2
-            pygame.draw.line(screen, WIN_LINE_COLOR, (x, 20), (x, WIDTH - 20), 10)
+            end_y = WIDTH - 20
+            pygame.draw.line(screen, WIN_LINE_COLOR, (x, 20), (x, 20 + (end_y - 20) * progress), 10)
         elif direction == 'diag':
-            pygame.draw.line(screen, WIN_LINE_COLOR, (20, 20), (WIDTH - 20, WIDTH - 20), 10)
+            end_x = WIDTH - 20
+            end_y = WIDTH - 20
+            pygame.draw.line(screen, WIN_LINE_COLOR, (20, 20), (20 + (end_x - 20) * progress, 20 + (end_y - 20) * progress), 10)
         elif direction == 'antidiag':
-            pygame.draw.line(screen, WIN_LINE_COLOR, (WIDTH - 20, 20), (20, WIDTH - 20), 10)
+            end_x = WIDTH - 20
+            end_y = WIDTH - 20
+            pygame.draw.line(screen, WIN_LINE_COLOR, (WIDTH - 20, 20), (WIDTH - 20 - (end_x - 20) * progress, 20 + (end_y - 20) * progress), 10)
 
 def computer_move():
     options = [(r, c) for r in range(ROWS) for c in range(COLS) if available_square(r, c)]
@@ -120,6 +126,7 @@ game_over = False
 mode_selected = False
 mode = None
 winner_info = None
+progress = 0  # This will control the animation of the winning line
 
 # Mode Selection
 while not mode_selected:
@@ -146,6 +153,12 @@ while running:
         draw_button("Replay", 50, 520, 150, 50)
         draw_button("Quit", 300, 520, 150, 50)
 
+    if winner_info:
+        progress += 0.05  # Increase this for faster animation
+        if progress > 1:
+            progress = 1  # Stop the animation at full progress
+        draw_win_line(winner_info, progress)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -159,6 +172,7 @@ while running:
                     player = 'X'
                     game_over = False
                     winner_info = None
+                    progress = 0  # Reset the animation progress
                 if 300 <= mx <= 450 and 520 <= my <= 570:
                     pygame.quit()
                     sys.exit()
@@ -183,9 +197,6 @@ while running:
                                 player = 'X'
                             else:
                                 player = 'O' if player == 'X' else 'X'
-
-    if winner_info:
-        draw_win_line(winner_info)
 
     pygame.display.update()
 

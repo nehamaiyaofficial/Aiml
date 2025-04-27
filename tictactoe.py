@@ -1,56 +1,88 @@
-# Simple Tic Tac Toe Game (CLI Version)
+import pygame
+import sys
 
-def print_board(board):
-    print("\n")
-    for row in board:
-        print(" | ".join(row))
-        print("-" * 5)
+# Initialize Pygame
+pygame.init()
 
-def check_winner(board, player):
-    # Check rows
-    for row in board:
-        if all(cell == player for cell in row):
-            return True
-    # Check columns
-    for col in range(3):
-        if all(board[row][col] == player for row in range(3)):
-            return True
-    # Check diagonals
-    if all(board[i][i] == player for i in range(3)) or \
-       all(board[i][2-i] == player for i in range(3)):
-        return True
-    return False
+# Screen settings
+WIDTH, HEIGHT = 300, 300
+LINE_WIDTH = 6
+BOARD_ROWS = 3
+BOARD_COLS = 3
+SQUARE_SIZE = WIDTH // BOARD_COLS
+CIRCLE_RADIUS = SQUARE_SIZE // 3
+CIRCLE_WIDTH = 15
+CROSS_WIDTH = 20
+SPACE = SQUARE_SIZE // 4
 
-def is_full(board):
-    return all(cell != " " for row in board for cell in row)
+# Colors
+BG_COLOR = (28, 170, 156)
+LINE_COLOR = (23, 145, 135)
+CIRCLE_COLOR = (239, 231, 200)
+CROSS_COLOR = (84, 84, 84)
 
-def tic_tac_toe():
-    board = [[" "] * 3 for _ in range(3)]
-    current_player = "X"
+# Setup screen
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('Tic Tac Toe')
+screen.fill(BG_COLOR)
 
-    while True:
-        print_board(board)
-        move = input(f"Player {current_player}, enter your move (row and column, e.g., 1 2): ")
-        try:
-            row, col = map(int, move.strip().split())
-            if board[row][col] != " ":
-                print("Cell already taken, try again!")
-                continue
-            board[row][col] = current_player
+# Board
+board = [[None for _ in range(BOARD_COLS)] for _ in range(BOARD_ROWS)]
 
-            if check_winner(board, current_player):
-                print_board(board)
-                print(f"Player {current_player} wins!")
-                break
+# Draw lines
+def draw_lines():
+    # Horizontal
+    pygame.draw.line(screen, LINE_COLOR, (0, SQUARE_SIZE), (WIDTH, SQUARE_SIZE), LINE_WIDTH)
+    pygame.draw.line(screen, LINE_COLOR, (0, 2 * SQUARE_SIZE), (WIDTH, 2 * SQUARE_SIZE), LINE_WIDTH)
+    # Vertical
+    pygame.draw.line(screen, LINE_COLOR, (SQUARE_SIZE, 0), (SQUARE_SIZE, HEIGHT), LINE_WIDTH)
+    pygame.draw.line(screen, LINE_COLOR, (2 * SQUARE_SIZE, 0), (2 * SQUARE_SIZE, HEIGHT), LINE_WIDTH)
 
-            if is_full(board):
-                print_board(board)
-                print("It's a tie!")
-                break
+def draw_figures():
+    for row in range(BOARD_ROWS):
+        for col in range(BOARD_COLS):
+            if board[row][col] == 'X':
+                # Draw X
+                pygame.draw.line(screen, CROSS_COLOR, (col * SQUARE_SIZE + SPACE, row * SQUARE_SIZE + SPACE),
+                                 (col * SQUARE_SIZE + SQUARE_SIZE - SPACE, row * SQUARE_SIZE + SQUARE_SIZE - SPACE), CROSS_WIDTH)
+                pygame.draw.line(screen, CROSS_COLOR, (col * SQUARE_SIZE + SPACE, row * SQUARE_SIZE + SQUARE_SIZE - SPACE),
+                                 (col * SQUARE_SIZE + SQUARE_SIZE - SPACE, row * SQUARE_SIZE + SPACE), CROSS_WIDTH)
 
-            current_player = "O" if current_player == "X" else "X"
-        except (ValueError, IndexError):
-            print("Invalid move. Please enter row and column between 0 and 2.")
+def mark_square(row, col, player):
+    board[row][col] = player
 
-if __name__ == "__main__":
-    tic_tac_toe()
+def available_square(row, col):
+    return board[row][col] is None
+
+def is_board_full():
+    for row in range(BOARD_ROWS):
+        for col in range(BOARD_COLS):
+            if board[row][col] is None:
+                return False
+    return True
+
+# Main loop
+draw_lines()
+player = 'X'
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouseX = event.pos[0]  # X coordinate
+            mouseY = event.pos[1]  # Y coordinate
+
+            clicked_row = mouseY // SQUARE_SIZE
+            clicked_col = mouseX // SQUARE_SIZE
+
+            if available_square(clicked_row, clicked_col):
+                mark_square(clicked_row, clicked_col, player)
+                draw_figures()
+
+    pygame.display.update()
+
+pygame.quit()
+sys.exit()
+

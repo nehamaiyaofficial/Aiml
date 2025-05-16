@@ -16,10 +16,10 @@ int main() {
             printf("Btech ECE\n");
             break;
         case 4:
-            printf("Btech Mechanic\n");
+            printf("Btech Mechanics\n");
             break;
        default:
-            printf("Invalid input! Please enter a number between 1 and 4.\n");
+            printf("Invalid input!`\n");
     }
     
     return 0;

@@ -20,6 +20,11 @@ int main() {
             break;
        default:
             printf("Invalid input!\n");
+=======
+            printf("Btech Mechanics\n");
+            break;
+       default:
+            printf("Invalid input!`\n");
     }
     
     return 0;

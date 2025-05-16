@@ -7,19 +7,19 @@ int main() {
     scanf("%d", &branch);
     switch(branch) {
         case 1:
-            printf("Btect CSE College Amity University\n");
+            printf("Btect aiml College Amity University\n");
             break;
 	case 2:
-            printf("Btech AIML\n");
+            printf("Btech cse\n");
             break;
 	case 3:
             printf("Btech ECE\n");
             break;
         case 4:
-            printf("Btech Mechanic\n");
+            printf("Btech biotic\n");
             break;
        default:
-            printf("Invalid input! Please enter a number between 1 and 4.\n");
+            printf("Invalid input!\n");
     }
     
     return 0;

@@ -9,8 +9,8 @@ Some cool stuff you’ll find here:<br>
  🔄 Pdf converter <br>
  🖼️📝 A script that generates captions for images—yes, it tries its best!<br>
  🎮 Catch the Falling Stars – a cute Python game   
-❌⭕ tictactoe.py: A classic Tic Tac Toe game built using Python.<br>
-💥 blockblast.py: A mini arcade-style game with updated features.<br>
+❌⭕ TicTacToe - A classic game.<br>
+💥 BlockBlast - A mini arcade-style game.<br>
  🚀 Goals<br>
 Apply AIML concepts to practical assignments<br>
 Learn through building<br>
